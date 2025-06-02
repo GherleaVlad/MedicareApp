@@ -106,6 +106,19 @@ def insert_sectie(sectie,sef_sectie):
                         VALUES (?,?)''', (sectie,sef_sectie))
         conexiune.commit()
 
+def verificare_sectie(sectie,sef_sectie):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Sectii where denumire = ? AND sef_sectie = ? ''' , (sectie,sef_sectie))
+        return cursor.fetchone()
+
+def get_sectii():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Sectii''')
+        return cursor.fetchall()
+
+
 
 
 # Functia folosita pentru adaugarea pacientilor in baza de date
