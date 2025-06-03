@@ -1,7 +1,7 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_sectie, verificare_sectie, get_sectii
+from baza_de_date import insert_sectie, verificare_sectie, get_sectii,update_sectii
 from tkinter import messagebox
 
 '''
@@ -29,7 +29,9 @@ class FereastraSectii(tkinter.Toplevel):
 
         for coloana in coloane:
             self.tabel_pacient.heading(coloana,text=coloana)
-            self.tabel_pacient.column(coloana,width=120)
+            self.tabel_pacient.column(coloana,width=120,anchor="center")
+
+        self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_sectie)
 
         self.tabel_pacient.pack()
         
@@ -48,13 +50,13 @@ class FereastraSectii(tkinter.Toplevel):
         self.entry_sef_sectie.grid(column=1,row=2,padx=5,pady=5)
         
         tkinter.Button(frame_date,text='SALVARE',command=lambda: self.adaugare_sectie(),width=21).grid(column=0,row=3,padx=5,pady=3)
-        tkinter.Button(frame_date,text='ACTUALIZARE',width=21).grid(column=1,row=3,padx=3,pady=5)
+        tkinter.Button(frame_date,text='ACTUALIZARE', command=lambda: self.update_sectie(),width=21).grid(column=1,row=3,padx=3,pady=5)
         
     def adaugare_sectie(self):
         sectie = self.entry_sectie.get()
         sef_sectie = self.entry_sef_sectie.get()
         
-        date_existente = verificare_sectie(sectie,sef_sectie)
+        date_existente = verificare_sectie(sectie)
 
         if sectie and sef_sectie:
             if date_existente is None:
@@ -62,14 +64,40 @@ class FereastraSectii(tkinter.Toplevel):
                 messagebox.showinfo('Mesaj', 'Sectie adaugata cu succes!')
                 self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
             else:
-                messagebox.showerror('Mesaj', 'Sectia este deja configurata!')
+                messagebox.showerror('EROARE', 'Sectia este deja configurata!')
                 self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
 
         else:
-            messagebox.showerror('EROARE', 'Introduceti valori valide!')
+            messagebox.showerror('EROARE', 'Introduceti date valide!')
             self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
 
     def load_all_sectii(self):
         self.tabel_pacient.delete(*self.tabel_pacient.get_children())
         for row in get_sectii():
             self.tabel_pacient.insert("", tkinter.END, values=row)
+
+    def update_sectie(self):
+        sectie = self.entry_sectie.get()
+        sef_sectie = self.entry_sef_sectie.get()
+
+        date_existente = verificare_sectie(sectie)
+
+        if sectie and sef_sectie:
+            if date_existente is not None:
+                update_sectii(sef_sectie)
+                messagebox.showinfo('Mesaj', 'Sectie actualizata cu succes!')
+                self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+
+        else:
+            messagebox.showerror('EROARE', 'Introduceti date valide!')
+            self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+
+    def load_selected_sectie(self, event):
+        selected = self.tabel_pacient.selection()
+        if selected:
+            values = self.tabel_pacient.item(selected[0])["values"]
+            self.entry_sectie.delete(0, tkinter.END)
+            self.entry_sectie.insert(0, values[1])
+
+            self.entry_sef_sectie.set(values[2])
+

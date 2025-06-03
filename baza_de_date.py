@@ -29,7 +29,7 @@ def creare_tabela_operatori():
                        parola TEXT,
                        nume TEXT,
                        prenume TEXT,
-                       administrator INTEGER)''')
+                       sectie TEXT)''')
         conexiune.commit()
 
 def creare_tabela_pacienti():
@@ -97,7 +97,9 @@ def creare_tabela_medici_curanti():
                        parafa TEXT)''')
         conexiune.commit()
 
-# Functii pentru operatiuni CRUD (create, read, update, delete) pentru tabelele pacienti si operatori
+# Functii pentru operatiuni CRUD (create, read, update, delete) pentru tabelele: Sectii, Medici_Curanti, Medici_Trimitatori, Operatori, Pacienti
+
+# Tabela Sectii
 
 def insert_sectie(sectie,sef_sectie):
     with conectare_baza_date() as conexiune:
@@ -106,10 +108,10 @@ def insert_sectie(sectie,sef_sectie):
                         VALUES (?,?)''', (sectie,sef_sectie))
         conexiune.commit()
 
-def verificare_sectie(sectie,sef_sectie):
+def verificare_sectie(sectie):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''SELECT * FROM Sectii where denumire = ? AND sef_sectie = ? ''' , (sectie,sef_sectie))
+        cursor.execute('''SELECT * FROM Sectii WHERE denumire = ? ''' , (sectie,))  
         return cursor.fetchone()
 
 def get_sectii():
@@ -117,9 +119,47 @@ def get_sectii():
         cursor = conexiune.cursor()
         cursor.execute('''SELECT * FROM Sectii''')
         return cursor.fetchall()
+    
+def update_sectii(sef_sectie):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Sectii SET sef_sectie = ? ''', (sef_sectie,))
+        conexiune.commit()
 
+# Tabela Medici_Curanti
 
+# Tabela Operatori
 
+def cautare_operator(utilizator, parola): 
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('SELECT * FROM Operatori WHERE utilizator = ? AND parola = ?',(utilizator,parola))
+        return cursor.fetchone()
+
+def insert_operator(utilizator, parola, nume, prenume, sectie):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''INSERT INTO Operatori (utilizator, parola , nume, prenume, sectie)
+                        VALUES (?,?,?,?,?)''', (utilizator, parola, nume, prenume, sectie))
+        conexiune.commit()
+
+def verificare_operator_dupa_utilizator(utilizator):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Operatori WHERE utilizator = ? ''' , (utilizator,))  
+        return cursor.fetchone()
+
+def verificare_operator_dupa_nume_prenume(nume, prenume):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Operatori WHERE nume = ? AND prenume = ? ''' , (nume,prenume))  
+        return cursor.fetchone()
+
+def get_operatori():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Operatori''')
+        return cursor.fetchall()
 
 # Functia folosita pentru adaugarea pacientilor in baza de date
 def adaugare_pacient():
@@ -129,12 +169,4 @@ def adaugare_pacient():
                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                        ''')
         conexiune.commit()
-
-# Functia folosita pentru autentificarea in aplicatie
-def cautare_operator(utilizator, parola): 
-    with conectare_baza_date() as conexiune:
-        cursor = conexiune.cursor()
-        cursor.execute('SELECT * FROM Operatori WHERE utilizator = ? AND parola = ?',(utilizator,parola))
-        return cursor.fetchone()
-
 
