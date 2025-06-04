@@ -111,13 +111,13 @@ class DatePacient(ttk.Frame):
         
 
         coloane = ('IdPacient','Nume','Prenume','Data Nasterii','Varsta','CNP','Sex','Sectie','Medic Trimitator','Bilet','Medic Curant','Diagnostic')
-        tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
+        self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
-            tabel_pacient.heading(coloana,text=coloana)
-            tabel_pacient.column(coloana,width=81)
+            self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
+            self.tabel_pacient.column(coloana,width=81,anchor='center')
 
-        tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2,padx=(5,5))
+        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2,padx=(5,5))
 
 
 

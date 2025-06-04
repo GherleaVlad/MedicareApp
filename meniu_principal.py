@@ -6,6 +6,7 @@ from fereastra_pacienti import FereastraPacient
 from fereastra_rapoarte import FereastraRapoarte
 from fereastra_operatori import FereastraOperatori
 from fereastra_sectii import FereastraSectii
+from fereastra_nomenclator import Fereastra_nomenclator
 
 '''
 Modulul meniu_principal contine clasa MeniuPrincipal a aplicatiei si care reprezinta meniul de baza din care utilizatorul isi selecteaza operatiunile dorite in program.
@@ -56,7 +57,7 @@ class MeniuPrincipal(tkinter.Tk):
         frame_administrare = tkinter.LabelFrame(self,text='Administrare',font=("Arial", 10, "bold"))
         frame_administrare.grid(row=1,column=2,padx=(0,10),pady=5)
         tkinter.Button(frame_administrare,text='OPERATORI', command=lambda: FereastraOperatori(self),width=30,height=3).pack(padx=20,pady=12)
-        tkinter.Button(frame_administrare,text='NOMENCLATOR MEDICI',width=30,height=3).pack(padx=20,pady=12)
+        tkinter.Button(frame_administrare,text='NOMENCLATOR MEDICI', command=lambda: Fereastra_nomenclator(self),width=30,height=3).pack(padx=20,pady=12)
         tkinter.Button(frame_administrare,text='SECTII', command= lambda: FereastraSectii(self),width=30,height=3).pack(padx=20,pady=12)
 
     def deschide_meniu_principal_operator(self):
