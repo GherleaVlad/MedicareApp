@@ -33,7 +33,6 @@ class FereastraAutentificare(tkinter.Toplevel):
         # Buton pentru autentificare cu comanda de verificare date de autentificare
         tkinter.Button(self, text="Autentificare", command=self.verifica_login).pack(pady=10)
 
-
     def verifica_login(self):
         '''
         Functia verifica_login din cadrul clasei FereastraAutentificare are rolul de a verifica daca utilizatorul si parola sunt conform 

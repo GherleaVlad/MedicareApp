@@ -75,15 +75,23 @@ class FereastraOperatori(tkinter.Toplevel):
         date_existente_utilizator = verificare_operator_dupa_utilizator(utilizator)
         date_existente_nume_prenume = verificare_operator_dupa_nume_prenume(nume, prenume)
 
-        if (date_existente_utilizator is None) or (date_existente_nume_prenume is None):
-            insert_operator(utilizator, parola, nume, prenume, sectie)       
-            messagebox.showinfo('Mesaj', 'Operator adaugata cu succes!')
-            self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+        if utilizator and nume and prenume and sectie and parola:
+            
+            if date_existente_utilizator is None:
+                if date_existente_nume_prenume is None:
+                    insert_operator(utilizator, parola, nume, prenume, sectie)       
+                    messagebox.showinfo('Mesaj', 'Operator adaugata cu succes!', parent = self)
+
+                else:
+                    messagebox.showerror('EROARE', 'Operatorul este deja configurat!', parent = self)
+
+            else:
+                messagebox.showerror('EROARE', 'Operatorul este deja configurat!', parent = self)
 
         else:
-            messagebox.showerror('EROARE', 'Operatorul este deja configurat!')
-            self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare             
 
+            messagebox.showerror('EROARE', 'Introduceti date valide!', parent = self)
+            
     def load_all_operatori(self):
         self.tabel_operatori.delete(*self.tabel_operatori.get_children())
         for row in get_operatori():
@@ -106,4 +114,3 @@ class FereastraOperatori(tkinter.Toplevel):
             self.entry_prenume.insert(0, values[4])
 
             self.entry_sectie.set(values[5])
-

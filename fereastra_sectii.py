@@ -52,6 +52,8 @@ class FereastraSectii(tkinter.Toplevel):
         tkinter.Button(frame_date,text='SALVARE',command=lambda: self.adaugare_sectie(),width=21).grid(column=0,row=3,padx=5,pady=3)
         tkinter.Button(frame_date,text='ACTUALIZARE', command=lambda: self.update_sectie(),width=21).grid(column=1,row=3,padx=3,pady=5)
         
+        tkinter.Label(self, text='ATENTIE! \n Poate fi modificat doar medicul sef de sectie \n pentru o sectie configurata! ').grid(column=0,row=1,padx=(5,0))
+
     def adaugare_sectie(self):
         sectie = self.entry_sectie.get()
         sef_sectie = self.entry_sef_sectie.get()
@@ -61,15 +63,13 @@ class FereastraSectii(tkinter.Toplevel):
         if sectie and sef_sectie:
             if date_existente is None:
                 insert_sectie(sectie,sef_sectie)       
-                messagebox.showinfo('Mesaj', 'Sectie adaugata cu succes!')
-                self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+                messagebox.showinfo('Mesaj', 'Sectie adaugata cu succes!', parent=self)
+
             else:
-                messagebox.showerror('EROARE', 'Sectia este deja configurata!')
-                self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+                messagebox.showerror('EROARE', 'Sectia este deja configurata!', parent=self)
 
         else:
-            messagebox.showerror('EROARE', 'Introduceti date valide!')
-            self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+            messagebox.showerror('EROARE', 'Introduceti date valide!', parent=self)
 
     def load_all_sectii(self):
         self.tabel_pacient.delete(*self.tabel_pacient.get_children())
@@ -83,15 +83,17 @@ class FereastraSectii(tkinter.Toplevel):
         date_existente = verificare_sectie(sectie)
 
         if sectie and sef_sectie:
-            if date_existente is not None:
+            if date_existente is None:
+
+                messagebox.showerror('EROARE', 'Sectia nu este configurata!', parent = self)
+                
+            else:
                 update_sectii(sef_sectie)
-                messagebox.showinfo('Mesaj', 'Sectie actualizata cu succes!')
-                self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
+                messagebox.showinfo('INFO', 'Sectie actualizata cu succes!', parent = self)
 
         else:
-            messagebox.showerror('EROARE', 'Introduceti date valide!')
-            self.focus_force() # Pentru intoarcerea in fereastra sectii dupa ce afiseaza mesajul de eroare
-
+            messagebox.showerror('EROARE', 'Introduceti date valide!',parent = self)
+            
     def load_selected_sectie(self, event):
         selected = self.tabel_pacient.selection()
         if selected:

@@ -11,7 +11,7 @@ def conectare_baza_date():
     conn = sqlite3.connect('medicare.db')
     return conn
 
-# Crearea tabelelor din baza de date
+# Crearea tabelelor din baza de date - complet mai putin tabela pacient (idk)
 
 def creare_tabela_operatori():
     '''
@@ -50,7 +50,7 @@ def creare_tabela_pacienti():
                        sex TEXT,
                        sectie TEXT,
                        medic_trimitator TEXT,
-                       bilte_trimitere TEXT,
+                       bilet_trimitere TEXT,
                        medic_curant TEXT,
                        diagnostic TEXT)
                        ''')
@@ -99,7 +99,7 @@ def creare_tabela_medici_curanti():
 
 # Functii pentru operatiuni CRUD (create, read, update, delete) pentru tabelele: Sectii, Medici_Curanti, Medici_Trimitatori, Operatori, Pacienti
 
-# Tabela Sectii
+# Tabela Sectii - complet
 
 def insert_sectie(sectie,sef_sectie):
     with conectare_baza_date() as conexiune:
@@ -128,9 +128,30 @@ def update_sectii(sef_sectie):
 
 # Tabela Medici_Curanti
 
+def insert_medic(nume, prenume, parafa):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''INSERT INTO Medici_Curanti (nume, prenume, parafa)
+                        VALUES (?,?, ?)''', (nume, prenume, parafa))
+        conexiune.commit()
+
+def get_medici():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Medici_Curanti''')
+        return cursor.fetchall()
+
+def verificare_existenta_medic(parafa):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Medici_Curanti WHERE parafa = ?''',(parafa,))
+        return cursor.fetchone()
+    
+
 # Tabela Operatori
 
 def cautare_operator(utilizator, parola): 
+    ''' Functia utilizata pentru verificarea datelor de conectare in aplicatie '''
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute('SELECT * FROM Operatori WHERE utilizator = ? AND parola = ?',(utilizator,parola))

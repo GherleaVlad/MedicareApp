@@ -119,9 +119,6 @@ class DatePacient(ttk.Frame):
 
         self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2,padx=(5,5))
 
-
-
-
 class Internare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)

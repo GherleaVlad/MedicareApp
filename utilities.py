@@ -31,7 +31,6 @@ def pozitionare_fereastra_pe_ecran(fereastra,latime_fereastra,inaltime_fereastra
 
     return (f"{latime}x{inaltime}+{pozitie_x}+{pozitie_y}")
 
-
 def data_curenta():
     datacurenta = datetime.today()
     data_formatata = datacurenta.strftime("%d.%m.%Y")
