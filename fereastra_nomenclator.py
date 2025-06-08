@@ -10,7 +10,7 @@ class Fereastra_nomenclator(tkinter.Toplevel):
         self.title('Nomenclator') # Titlul ferestrei
         self.resizable(False, False) # Imposibilitate de redimensionare fereastra
         self.update_idletasks() # Asteapta initializarea completa a ferestrei si abia apoi o deschide
-        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,625,450)) # Setam geometria si centrarea pe ecran
+        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,725,450)) # Setam geometria si centrarea pe ecran
         
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
@@ -38,7 +38,7 @@ class MediciCuranti(ttk.Frame):
         tkinter.Label(self.frame_date_medic,text='Nume: ').grid(column=0,row=0,pady=5)
         tkinter.Label(self.frame_date_medic,text='Prenume: ').grid(column=0,row=1,pady=5)
         tkinter.Label(self.frame_date_medic,text='Parafa: ').grid(column=0,row=2,pady=5)
-
+        tkinter.Label(self.frame_date_medic, text='Activ/Inactiv: ').grid(column=0,row=3,pady=5)
 
         self.entry_nume = tkinter.Entry(self.frame_date_medic,width=26)
         self.entry_nume.grid(column=1,row=0,padx=5,pady=5)
@@ -50,16 +50,21 @@ class MediciCuranti(ttk.Frame):
         self.entry_parafa = tkinter.Entry(self.frame_date_medic,width=26)
         self.entry_parafa.grid(column=1,row=2,padx=5,pady=5)
 
+        self.activ_var = tkinter.IntVar()
+        self.activ_checkbox = tkinter.Checkbutton(self.frame_date_medic, variable=self.activ_var)
+        self.activ_checkbox.grid(column=1,row=3,padx=5,pady=5)
+
 
         self.frame_butoane = tkinter.Frame(self)
         self.frame_butoane.grid(column=1,row=0,padx=(10,10),pady=(10,10))
 
-        tkinter.Button(self.frame_butoane,text='Adaugare',command=lambda: self.adaugare_medic(),width=25).grid(column=0,row=0,pady=5)
-        tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=1,pady=5)
-        tkinter.Button(self.frame_butoane,text='Inactivare',width=25).grid(column=0,row=2,pady=5)
+        tkinter.Button(self.frame_butoane,text='Actualizare date',width=25).grid(column=0,row=0,padx=5,pady=5)
+        tkinter.Button(self.frame_butoane,text='Adaugare',command=lambda: self.adaugare_medic(),width=25).grid(column=0,row=1,pady=5)
+        tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=2,pady=5)
+        tkinter.Button(self.frame_butoane,text='Stergere',width=25).grid(column=0,row=3,pady=5)
 
 
-        coloane = ('IdMedic','Nume','Prenume','Parafa')
+        coloane = ('IdMedic','Nume','Prenume','Parafa','Activ')
         self.tabel_medici_curanti = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
@@ -72,13 +77,14 @@ class MediciCuranti(ttk.Frame):
         nume = self.entry_nume.get()
         prenume = self.entry_prenume.get()
         parafa = self.entry_parafa.get().capitalize()
+        activ = self.activ_var.get()
 
         date_existente = verificare_existenta_medic(parafa)
 
         if nume and prenume and parafa:
 
             if date_existente is None:
-                insert_medic(nume, prenume, parafa)
+                insert_medic(nume, prenume, parafa, activ)
                 messagebox.showinfo( 'INFO', 'Medic adaugat cu succes! ', parent = self)
 
             else:
@@ -115,12 +121,12 @@ class MediciTrimitatori(ttk.Frame):
         self.frame_butoane = tkinter.Frame(self)
         self.frame_butoane.grid(column=1,row=0,padx=(10,10),pady=(10,10))
 
-        tkinter.Button(self.frame_butoane,text='Adaugare',width=25).grid(column=0,row=0,pady=5)
-        tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=1,pady=5)
-        tkinter.Button(self.frame_butoane,text='Incarcare nomenclator medici',width=25).grid(column=0,row=2,pady=5)
+        tkinter.Button(self.frame_butoane,text='Actualizare date',width=25).grid(column=0,row=0,pady=5)
+        tkinter.Button(self.frame_butoane,text='Adaugare',width=25).grid(column=0,row=1,pady=5)
+        tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=2,pady=5)
+        tkinter.Button(self.frame_butoane,text='Incarcare nomenclator medici',width=25).grid(column=0,row=3,pady=5)
 
-
-        coloane = ('IdMedic','Nume','Prenume','Parafa')
+        coloane = ('IdMedic','Nume','Prenume','Parafa', 'Activ')
         self.tabel_medici_curanti = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:

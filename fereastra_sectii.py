@@ -37,25 +37,32 @@ class FereastraSectii(tkinter.Toplevel):
         
         # Butoane si Entry-uri pentru introducere operator
 
-        tkinter.Button(frame_date,text='INCARCA SECTII',command=lambda: self.load_all_sectii(),width=25, relief='groove').grid(column=0,row=0,padx=5,pady=5,columnspan=2)
-
         # Entry si label pentru sectie
-        tkinter.Label(frame_date,text='SECTIE: ').grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Label(frame_date,text='SECTIE: ').grid(column=0,row=0,padx=5,pady=5)
         self.entry_sectie = tkinter.Entry(frame_date, width=26)
-        self.entry_sectie.grid(column=1,row=1,padx=5,pady=5)
+        self.entry_sectie.grid(column=1,row=0,padx=5,pady=5)
 
         # Entry si label pentru medic sef de sectie
-        tkinter.Label(frame_date,text='SEF SECTIE: ').grid(column=0,row=2,padx=5,pady=5)
-        self.entry_sef_sectie = ttk.Combobox(frame_date, values=['Sectie1','Sectie2'], state='readonly', width=23)
-        self.entry_sef_sectie.grid(column=1,row=2,padx=5,pady=5)
+        tkinter.Label(frame_date,text='SEF SECTIE: ').grid(column=0,row=1,padx=5,pady=5)
+        self.entry_sef_sectie = ttk.Combobox(frame_date, values=['Medic1','Medic2'], state='readonly', width=23)
+        self.entry_sef_sectie.grid(column=1,row=1,padx=5,pady=5)
         
-        tkinter.Button(frame_date,text='SALVARE',command=lambda: self.adaugare_sectie(),width=21).grid(column=0,row=3,padx=5,pady=3)
-        tkinter.Button(frame_date,text='ACTUALIZARE', command=lambda: self.update_sectie(),width=21).grid(column=1,row=3,padx=3,pady=5)
+        tkinter.Button(frame_date,text='SALVARE',command=lambda: self.adaugare_sectie(),width=21).grid(column=0,row=2,padx=5,pady=3)
+        tkinter.Button(frame_date,text='ACTUALIZARE', command=lambda: self.modificare_sectie(),width=21).grid(column=1,row=2,padx=3,pady=5)
         
         tkinter.Label(self, text='ATENTIE! \n Poate fi modificat doar medicul sef de sectie \n pentru o sectie configurata! ').grid(column=0,row=1,padx=(5,0))
 
+        self.refresh_sectii()
+
+    def refresh_sectii(self):
+        for rows in self.tabel_pacient.get_children():
+            self.tabel_pacient.delete(rows)
+
+        for rows in get_sectii():
+            self.tabel_pacient.insert("", tkinter.END, values=rows)
+
     def adaugare_sectie(self):
-        sectie = self.entry_sectie.get()
+        sectie = self.entry_sectie.get().strip()
         sef_sectie = self.entry_sef_sectie.get()
         
         date_existente = verificare_sectie(sectie)
@@ -63,7 +70,7 @@ class FereastraSectii(tkinter.Toplevel):
         if sectie and sef_sectie:
             if date_existente is None:
                 insert_sectie(sectie,sef_sectie)       
-                messagebox.showinfo('Mesaj', 'Sectie adaugata cu succes!', parent=self)
+                messagebox.showinfo('INFO', 'Sectie adaugata cu succes!', parent=self)
 
             else:
                 messagebox.showerror('EROARE', 'Sectia este deja configurata!', parent=self)
@@ -71,33 +78,48 @@ class FereastraSectii(tkinter.Toplevel):
         else:
             messagebox.showerror('EROARE', 'Introduceti date valide!', parent=self)
 
-    def load_all_sectii(self):
-        self.tabel_pacient.delete(*self.tabel_pacient.get_children())
-        for row in get_sectii():
-            self.tabel_pacient.insert("", tkinter.END, values=row)
+        self.entry_sectie.delete(0, tkinter.END)
+        self.entry_sef_sectie.set('')
 
-    def update_sectie(self):
-        sectie = self.entry_sectie.get()
+        self.refresh_sectii()
+
+    def modificare_sectie(self):
+        sectie = self.entry_sectie.get().strip()
         sef_sectie = self.entry_sef_sectie.get()
-
-        date_existente = verificare_sectie(sectie)
-
+        
         if sectie and sef_sectie:
-            if date_existente is None:
 
-                messagebox.showerror('EROARE', 'Sectia nu este configurata!', parent = self)
+            if verificare_sectie(sectie) is not None:
                 
+                if self.id_sectie:
+                    intrebare = messagebox.askyesno('CONFIRMARE MODIFICARE', 
+                                                f'Doriti modificarea sefului de sectie pentru sectia: {sectie}',
+                                                parent = self)
+                
+                if intrebare:
+                    update_sectii(sef_sectie,self.id_sectie)
+                    messagebox.showinfo('INFO', 'Sectie modificata!', parent = self)
+                else:
+                    messagebox.showwarning('AVERTIZARE', 'Datele nu au fost modificate!', parent = self)
+
             else:
-                update_sectii(sef_sectie)
-                messagebox.showinfo('INFO', 'Sectie actualizata cu succes!', parent = self)
+                messagebox.showerror('EROARE', 'Sectia nu este configurata!', parent = self)
 
         else:
-            messagebox.showerror('EROARE', 'Introduceti date valide!',parent = self)
+            messagebox.showerror('EROARE', 'Selectati o inregistrare!', parent = self)
+
+        self.entry_sectie.delete(0, tkinter.END)
+        self.entry_sef_sectie.set('')
+
+        self.refresh_sectii()
             
     def load_selected_sectie(self, event):
         selected = self.tabel_pacient.selection()
         if selected:
             values = self.tabel_pacient.item(selected[0])["values"]
+
+            self.id_sectie = values[0]
+
             self.entry_sectie.delete(0, tkinter.END)
             self.entry_sectie.insert(0, values[1])
 

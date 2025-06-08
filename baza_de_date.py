@@ -29,7 +29,8 @@ def creare_tabela_operatori():
                        parola TEXT,
                        nume TEXT,
                        prenume TEXT,
-                       sectie TEXT)''')
+                       sectie TEXT,
+                       activ TEXT)''')
         conexiune.commit()
 
 def creare_tabela_pacienti():
@@ -80,7 +81,8 @@ def creare_tabela_medici_trimitatori():
                        IdMedicTrimitator INTEGER PRIMARY KEY AUTOINCREMENT,
                        nume TEXT,
                        prenume TEXT,
-                       parafa TEXT)''')
+                       parafa TEXT,
+                       activ TEXT)''')
         conexiune.commit()
 
 def creare_tabela_medici_curanti():
@@ -94,7 +96,8 @@ def creare_tabela_medici_curanti():
                        IdMedicCurant INTEGER PRIMARY KEY AUTOINCREMENT,
                        nume TEXT,
                        prenume TEXT,
-                       parafa TEXT)''')
+                       parafa TEXT,
+                       activ TEXT)''')
         conexiune.commit()
 
 # Functii pentru operatiuni CRUD (create, read, update, delete) pentru tabelele: Sectii, Medici_Curanti, Medici_Trimitatori, Operatori, Pacienti
@@ -120,19 +123,19 @@ def get_sectii():
         cursor.execute('''SELECT * FROM Sectii''')
         return cursor.fetchall()
     
-def update_sectii(sef_sectie):
+def update_sectii(sef_sectie,idsectie):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''UPDATE Sectii SET sef_sectie = ? ''', (sef_sectie,))
+        cursor.execute('''UPDATE Sectii SET sef_sectie = ? WHERE IdSectie = ? ''', (sef_sectie,idsectie))
         conexiune.commit()
 
 # Tabela Medici_Curanti
 
-def insert_medic(nume, prenume, parafa):
+def insert_medic(nume, prenume, parafa, activ):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''INSERT INTO Medici_Curanti (nume, prenume, parafa)
-                        VALUES (?,?, ?)''', (nume, prenume, parafa))
+        cursor.execute('''INSERT INTO Medici_Curanti (nume, prenume, parafa, activ)
+                        VALUES (?,?,?,?)''', (nume, prenume, parafa, activ))
         conexiune.commit()
 
 def get_medici():
@@ -160,9 +163,20 @@ def cautare_operator(utilizator, parola):
 def insert_operator(utilizator, parola, nume, prenume, sectie):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''INSERT INTO Operatori (utilizator, parola , nume, prenume, sectie)
-                        VALUES (?,?,?,?,?)''', (utilizator, parola, nume, prenume, sectie))
+        cursor.execute('''INSERT INTO Operatori (utilizator, parola , nume, prenume, sectie, activ)
+                        VALUES (?,?,?,?,?,?)''', (utilizator, parola, nume, prenume, sectie, '1'))
         conexiune.commit()
+
+def update_operator(nume, prenume, sectie, idoperator):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Operatori SET nume = ? , prenume = ?, sectie = ? WHERE IdOperator = ? ''', (nume, prenume, sectie, idoperator))
+        conexiune.commit()
+
+def inactivare_operator(idoperator):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute(''' UPDATE Operatori SET activ = ? WHERE IdOperator = ? ''' , ('0',idoperator))
 
 def verificare_operator_dupa_utilizator(utilizator):
     with conectare_baza_date() as conexiune:
