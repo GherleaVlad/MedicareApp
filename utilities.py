@@ -4,7 +4,7 @@ contexte din aplicatie
 '''
 
 from datetime import datetime
-
+from baza_de_date import get_medici_curanti,get_sectii
 
 def pozitionare_fereastra_pe_ecran(fereastra,latime_fereastra,inaltime_fereastra):
     '''
@@ -36,4 +36,19 @@ def data_curenta():
     data_formatata = datacurenta.strftime("%d.%m.%Y")
     return data_formatata
 
+def unpack_medici():
+    medici = get_medici_curanti()
+    
+    if medici is None:
+        return ''
+    else:
+        return [f'{medic[1]}  {medic[2]} - {medic[3]}' for medic in medici]
+
+def unpack_sectii():
+    sectii = get_sectii()
+    
+    if sectii is None:
+        return ''
+    else:
+        return [sectie[1] for sectie in sectii]
 

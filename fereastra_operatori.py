@@ -50,7 +50,7 @@ class FereastraOperatori(tkinter.Toplevel):
         
         # Entry si label pentru sectie utilizator
         tkinter.Label(frame_date,text='SECTIE: ').grid(column=0,row=3,padx=5,pady=5)
-        self.entry_sectie = ttk.Combobox(frame_date,values=['Sectie1','Sectie2'], state='readonly', width=23)
+        self.entry_sectie = ttk.Combobox(frame_date,values=utilities.unpack_sectii(), state='readonly', width=23)
         self.entry_sectie.grid(column=1,row=3,padx=5,pady=5)
         
         # Entry si label pentru parola utilizator

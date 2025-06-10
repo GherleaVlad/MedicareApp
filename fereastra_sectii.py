@@ -1,7 +1,7 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_sectie, verificare_sectie, get_sectii,update_sectii
+from baza_de_date import insert_sectie, verificare_sectie, get_sectii,update_sectii, get_medici_curanti
 from tkinter import messagebox
 
 '''
@@ -15,7 +15,7 @@ class FereastraSectii(tkinter.Toplevel):
         self.title('Sectii') # Numele ferestrei
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
-        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,800,350)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
+        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,900,350)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
 
 
         self.frame_tabel = tkinter.Frame(self)
@@ -29,7 +29,7 @@ class FereastraSectii(tkinter.Toplevel):
 
         for coloana in coloane:
             self.tabel_pacient.heading(coloana,text=coloana)
-            self.tabel_pacient.column(coloana,width=120,anchor="center")
+            self.tabel_pacient.column(coloana,width=162,anchor="center")
 
         self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_sectie)
 
@@ -44,7 +44,7 @@ class FereastraSectii(tkinter.Toplevel):
 
         # Entry si label pentru medic sef de sectie
         tkinter.Label(frame_date,text='SEF SECTIE: ').grid(column=0,row=1,padx=5,pady=5)
-        self.entry_sef_sectie = ttk.Combobox(frame_date, values=['Medic1','Medic2'], state='readonly', width=23)
+        self.entry_sef_sectie = ttk.Combobox(frame_date, values= utilities.unpack_medici(), state='readonly', width=23)
         self.entry_sef_sectie.grid(column=1,row=1,padx=5,pady=5)
         
         tkinter.Button(frame_date,text='SALVARE',command=lambda: self.adaugare_sectie(),width=21).grid(column=0,row=2,padx=5,pady=3)

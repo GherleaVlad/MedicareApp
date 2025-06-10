@@ -138,6 +138,12 @@ def insert_medic_curant(nume, prenume, parafa, activ):
                         VALUES (?,?,?,?)''', (nume, prenume, parafa, activ))
         conexiune.commit()
 
+def update_medic_curant(nume, prenume, activ, id_medic):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Medici_Curanti SET nume = ?, prenume = ?, activ = ? WHERE IdMedicCurant = ? ''', (nume,prenume,activ,id_medic))
+        conexiune.commit()
+
 def get_medici_curanti():
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
@@ -157,6 +163,12 @@ def insert_medic_trimitator(nume, prenume, parafa):
         cursor = conexiune.cursor()
         cursor.execute('''INSERT INTO Medici_Trimitatori (nume, prenume, parafa)
                         VALUES (?,?,?)''', (nume, prenume, parafa))
+        conexiune.commit()
+
+def update_medic_trimitator(nume, prenume, id_medic):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Medici_Trimitatori SET nume = ?, prenume = ? WHERE IdMedicTrimitator = ? ''', (nume, prenume,id_medic))
         conexiune.commit()
 
 def get_medici_trimitatori():
