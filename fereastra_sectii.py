@@ -93,7 +93,7 @@ class FereastraSectii(tkinter.Toplevel):
                 
                 if self.id_sectie:
                     intrebare = messagebox.askyesno('CONFIRMARE MODIFICARE', 
-                                                f'Doriti modificarea sefului de sectie pentru sectia: {sectie}',
+                                                f'Confirmati modificarea sefului de sectie pentru sectia: {sectie}',
                                                 parent = self)
                 
                 if intrebare:

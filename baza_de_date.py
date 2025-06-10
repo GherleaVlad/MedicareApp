@@ -81,8 +81,8 @@ def creare_tabela_medici_trimitatori():
                        IdMedicTrimitator INTEGER PRIMARY KEY AUTOINCREMENT,
                        nume TEXT,
                        prenume TEXT,
-                       parafa TEXT,
-                       activ TEXT)''')
+                       parafa TEXT
+                       )''')
         conexiune.commit()
 
 def creare_tabela_medici_curanti():
@@ -131,25 +131,45 @@ def update_sectii(sef_sectie,idsectie):
 
 # Tabela Medici_Curanti
 
-def insert_medic(nume, prenume, parafa, activ):
+def insert_medic_curant(nume, prenume, parafa, activ):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute('''INSERT INTO Medici_Curanti (nume, prenume, parafa, activ)
                         VALUES (?,?,?,?)''', (nume, prenume, parafa, activ))
         conexiune.commit()
 
-def get_medici():
+def get_medici_curanti():
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute('''SELECT * FROM Medici_Curanti''')
         return cursor.fetchall()
 
-def verificare_existenta_medic(parafa):
+def verificare_existenta_medic_curant(parafa):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute('''SELECT * FROM Medici_Curanti WHERE parafa = ?''',(parafa,))
         return cursor.fetchone()
     
+# Tabela Medici_Trimitatori
+
+def insert_medic_trimitator(nume, prenume, parafa):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''INSERT INTO Medici_Trimitatori (nume, prenume, parafa)
+                        VALUES (?,?,?)''', (nume, prenume, parafa))
+        conexiune.commit()
+
+def get_medici_trimitatori():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Medici_Trimitatori''')
+        return cursor.fetchall()
+    
+def verificare_existenta_medic_trimitator(parafa):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Medici_Trimitatori WHERE parafa = ?''',(parafa,))
+        return cursor.fetchone()    
 
 # Tabela Operatori
 

@@ -1,7 +1,7 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_medic, get_medici, verificare_existenta_medic
+from baza_de_date import insert_medic_curant, get_medici_curanti, verificare_existenta_medic_curant, insert_medic_trimitator, get_medici_trimitatori, verificare_existenta_medic_trimitator
 from tkinter import messagebox
 
 class Fereastra_nomenclator(tkinter.Toplevel):
@@ -58,7 +58,6 @@ class MediciCuranti(ttk.Frame):
         self.frame_butoane = tkinter.Frame(self)
         self.frame_butoane.grid(column=1,row=0,padx=(10,10),pady=(10,10))
 
-        tkinter.Button(self.frame_butoane,text='Actualizare date',width=25).grid(column=0,row=0,padx=5,pady=5)
         tkinter.Button(self.frame_butoane,text='Adaugare',command=lambda: self.adaugare_medic(),width=25).grid(column=0,row=1,pady=5)
         tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=2,pady=5)
         tkinter.Button(self.frame_butoane,text='Stergere',width=25).grid(column=0,row=3,pady=5)
@@ -73,18 +72,30 @@ class MediciCuranti(ttk.Frame):
 
         self.tabel_medici_curanti.grid(column=0,row=1,columnspan=2,rowspan=2,padx=(50,10),pady=(10,10))
 
+        self.tabel_medici_curanti.bind("<ButtonRelease-1>", self.load_selected_medic)
+
+        self.refresh_medici()
+
+    def refresh_medici(self):
+        
+        for rows in self.tabel_medici_curanti.get_children():
+            self.tabel_medici_curanti.delete(rows)
+
+        for rows in get_medici_curanti():
+            self.tabel_medici_curanti.insert("", tkinter.END , values=rows)
+
     def adaugare_medic(self):
         nume = self.entry_nume.get()
         prenume = self.entry_prenume.get()
         parafa = self.entry_parafa.get().capitalize()
         activ = self.activ_var.get()
 
-        date_existente = verificare_existenta_medic(parafa)
+        date_existente = verificare_existenta_medic_curant(parafa)
 
         if nume and prenume and parafa:
 
             if date_existente is None:
-                insert_medic(nume, prenume, parafa, activ)
+                insert_medic_curant(nume, prenume, parafa, activ)
                 messagebox.showinfo( 'INFO', 'Medic adaugat cu succes! ', parent = self)
 
             else:
@@ -94,6 +105,30 @@ class MediciCuranti(ttk.Frame):
         else:
 
             messagebox.showerror('EROARE', 'Introduceti date valide! ', parent = self)
+
+        self.refresh_medici()
+
+    def modificare_medic(self):
+        pass
+
+    def load_selected_medic(self, event):
+        selected = self.tabel_medici_curanti.selection()
+
+        if selected:
+            values = self.tabel_medici_curanti.item(selected[0])["values"]
+
+            self.id_medic = values[0]
+
+            self.entry_nume.delete(0, tkinter.END)
+            self.entry_nume.insert(0, values[1])
+
+            self.entry_prenume.delete(0, tkinter.END)
+            self.entry_prenume.insert(0, values[2])
+
+            self.entry_parafa.delete(0, tkinter.END)
+            self.entry_parafa.insert(0, values[3])
+
+            self.activ_var.set(int(values[4]))
 
 
 class MediciTrimitatori(ttk.Frame):
@@ -106,31 +141,83 @@ class MediciTrimitatori(ttk.Frame):
         tkinter.Label(self.frame_date_medic,text='Prenume: ').grid(column=0,row=1,pady=5)
         tkinter.Label(self.frame_date_medic,text='Parafa: ').grid(column=0,row=2,pady=5)
 
-
         self.entry_nume = tkinter.Entry(self.frame_date_medic,width=26)
         self.entry_nume.grid(column=1,row=0,padx=5,pady=5)
 
         self.entry_prenume = tkinter.Entry(self.frame_date_medic,width=26)
         self.entry_prenume.grid(column=1,row=1,padx=5,pady=5)
 
-
         self.entry_parafa = tkinter.Entry(self.frame_date_medic,width=26)
         self.entry_parafa.grid(column=1,row=2,padx=5,pady=5)
-
 
         self.frame_butoane = tkinter.Frame(self)
         self.frame_butoane.grid(column=1,row=0,padx=(10,10),pady=(10,10))
 
-        tkinter.Button(self.frame_butoane,text='Actualizare date',width=25).grid(column=0,row=0,pady=5)
-        tkinter.Button(self.frame_butoane,text='Adaugare',width=25).grid(column=0,row=1,pady=5)
+        tkinter.Button(self.frame_butoane,text='Adaugare', command= lambda: self.adaugare_medic(),width=25).grid(column=0,row=1,pady=5)
         tkinter.Button(self.frame_butoane,text='Modificare',width=25).grid(column=0,row=2,pady=5)
         tkinter.Button(self.frame_butoane,text='Incarcare nomenclator medici',width=25).grid(column=0,row=3,pady=5)
 
-        coloane = ('IdMedic','Nume','Prenume','Parafa', 'Activ')
-        self.tabel_medici_curanti = ttk.Treeview(self, columns=coloane, show='headings')
+        coloane = ('IdMedic','Nume','Prenume','Parafa')
+        self.tabel_medici_trimitatori = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
-            self.tabel_medici_curanti.heading(coloana,text=coloana,anchor='center')
-            self.tabel_medici_curanti.column(coloana,width=125,anchor='center')
+            self.tabel_medici_trimitatori.heading(coloana,text=coloana,anchor='center')
+            self.tabel_medici_trimitatori.column(coloana,width=125,anchor='center')
 
-        self.tabel_medici_curanti.grid(column=0,row=1,columnspan=2,rowspan=2,padx=(50,10),pady=(10,10))
+        self.tabel_medici_trimitatori.grid(column=0,row=1,columnspan=2,rowspan=2,padx=(50,10),pady=(10,10))
+
+        self.tabel_medici_trimitatori.bind("<ButtonRelease-1>", self.load_selected_medic)
+
+        self.refresh_medici()
+
+    def refresh_medici(self):
+        
+        for rows in self.tabel_medici_trimitatori.get_children():
+            self.tabel_medici_trimitatori.delete(rows)
+
+        for rows in get_medici_trimitatori():
+            self.tabel_medici_trimitatori.insert("", tkinter.END , values=rows)
+
+    def adaugare_medic(self):
+        nume = self.entry_nume.get()
+        prenume = self.entry_prenume.get()
+        parafa = self.entry_parafa.get().capitalize()
+
+        date_existente = verificare_existenta_medic_trimitator(parafa)
+
+        if nume and prenume and parafa:
+
+            if date_existente is None:
+                insert_medic_trimitator(nume, prenume, parafa)
+                messagebox.showinfo( 'INFO', 'Medic adaugat cu succes! ', parent = self)
+
+            else:
+
+                messagebox.showerror('EROARE', 'Medicul este deja configurat! ', parent = self)
+
+        else:
+
+            messagebox.showerror('EROARE', 'Introduceti date valide! ', parent = self)
+
+        self.refresh_medici()
+
+    def modificare_medic(self):
+        pass
+
+    def load_selected_medic(self, event):
+        selected = self.tabel_medici_trimitatori.selection()
+
+        if selected:
+            values = self.tabel_medici_trimitatori.item(selected[0])["values"]
+
+            self.id_medic = values[0]
+
+            self.entry_nume.delete(0, tkinter.END)
+            self.entry_nume.insert(0, values[1])
+
+            self.entry_prenume.delete(0, tkinter.END)
+            self.entry_prenume.insert(0, values[2])
+
+            self.entry_parafa.delete(0, tkinter.END)
+            self.entry_parafa.insert(0, values[3])
+
