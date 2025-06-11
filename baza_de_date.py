@@ -81,8 +81,8 @@ def creare_tabela_medici_trimitatori():
                        IdMedicTrimitator INTEGER PRIMARY KEY AUTOINCREMENT,
                        nume TEXT,
                        prenume TEXT,
-                       parafa TEXT
-                       )''')
+                       parafa TEXT,
+                       activ TEXT)''')
         conexiune.commit()
 
 def creare_tabela_medici_curanti():
@@ -161,8 +161,8 @@ def verificare_existenta_medic_curant(parafa):
 def insert_medic_trimitator(nume, prenume, parafa):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''INSERT INTO Medici_Trimitatori (nume, prenume, parafa)
-                        VALUES (?,?,?)''', (nume, prenume, parafa))
+        cursor.execute('''INSERT INTO Medici_Trimitatori (nume, prenume, parafa, activ)
+                        VALUES (?,?,?,?)''', (nume, prenume, parafa, '1'))
         conexiune.commit()
 
 def update_medic_trimitator(nume, prenume, id_medic):
@@ -182,6 +182,13 @@ def verificare_existenta_medic_trimitator(parafa):
         cursor = conexiune.cursor()
         cursor.execute('''SELECT * FROM Medici_Trimitatori WHERE parafa = ?''',(parafa,))
         return cursor.fetchone()    
+
+def update_parafe_inexistente(parafa):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Medici_Trimitatori SET activ = ? WHERE parafa = ? ''', ('0', parafa))
+        conexiune.commit()
+
 
 # Tabela Operatori
 

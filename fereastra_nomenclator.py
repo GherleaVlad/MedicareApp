@@ -1,8 +1,9 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_medic_curant, get_medici_curanti, verificare_existenta_medic_curant, update_medic_curant, insert_medic_trimitator, get_medici_trimitatori, verificare_existenta_medic_trimitator, update_medic_trimitator
-from tkinter import messagebox
+from baza_de_date import insert_medic_curant, get_medici_curanti, verificare_existenta_medic_curant, update_medic_curant, insert_medic_trimitator, get_medici_trimitatori, verificare_existenta_medic_trimitator, update_medic_trimitator, update_parafe_inexistente
+from tkinter import messagebox, filedialog
+import json
 
 class Fereastra_nomenclator(tkinter.Toplevel):
     def __init__(self,master): # Constructorul clasei Fereastra_nomenclator (clasa care mosteneste TopLevel din Tkinter)
@@ -190,9 +191,9 @@ class MediciTrimitatori(ttk.Frame):
 
         tkinter.Button(self.frame_butoane,text='Adaugare', command= lambda: self.adaugare_medic(),width=25).grid(column=0,row=1,pady=5)
         tkinter.Button(self.frame_butoane,text='Modificare', command= lambda: self.modificare_medic(),width=25).grid(column=0,row=2,pady=5)
-        tkinter.Button(self.frame_butoane,text='Incarcare nomenclator medici',width=25).grid(column=0,row=3,pady=5)
+        tkinter.Button(self.frame_butoane,text='Incarcare nomenclator medici', command= lambda: self.incarcare_nomenclator(),width=25).grid(column=0,row=3,pady=5)
 
-        coloane = ('IdMedic','Nume','Prenume','Parafa')
+        coloane = ('IdMedic','Nume','Prenume','Parafa', 'Activ')
         self.tabel_medici_trimitatori = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
@@ -288,4 +289,32 @@ class MediciTrimitatori(ttk.Frame):
             self.entry_parafa.insert(0, values[3])
 
     def incarcare_nomenclator(self):
-        pass
+        cale_fisier = filedialog.askopenfilename(
+            title='Selectati fisierul JSON pentru medicii trimitatori',
+            filetypes=[('Fișier JSON', '*.json')],
+            parent=self
+        )
+
+        if cale_fisier:
+            medici_trimitatori_existenti = get_medici_trimitatori() 
+            parafe_nomenclator = [medic[3] for medic in medici_trimitatori_existenti]
+
+            with open(cale_fisier, 'r') as fisier:
+                data = json.load(fisier)
+
+                for medic_nou in data:
+                    parafa_noua = medic_nou.get('parafa')
+                    
+                    if parafa_noua not in parafe_nomenclator:
+                        insert_medic_trimitator(
+                            medic_nou.get('nume'),
+                            medic_nou.get('prenume'),
+                            parafa_noua
+                        )
+
+
+            messagebox.showinfo('SUCCES', 'Nomenclator încărcat cu succes!', parent=self)
+            self.refresh_medici()
+
+        else:
+            messagebox.showerror('EROARE', 'Nu ați selectat un fișier valid!', parent=self)
