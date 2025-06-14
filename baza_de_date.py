@@ -49,11 +49,8 @@ def creare_tabela_pacienti():
                        varsta INTEGER,
                        CNP INTEGER,
                        sex TEXT,
-                       sectie TEXT,
-                       medic_trimitator TEXT,
-                       bilet_trimitere TEXT,
-                       medic_curant TEXT,
-                       diagnostic TEXT)
+                       asigurat TEXT
+                       )
                        ''')
         conexiune.commit()
 
@@ -236,11 +233,33 @@ def get_operatori():
         return cursor.fetchall()
 
 # Functia folosita pentru adaugarea pacientilor in baza de date
-def adaugare_pacient():
+
+
+def insert_pacient(nume, prenume, data_nastere, varsta, cnp, sex, asigurat):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''INSERT INTO Pacienti (nume, prenume, data_nastere, varsta, CNP, sex, sectie, medic_trimitator, bilet_trimitere, medic_curant, diagnostic)
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                       ''')
+        cursor.execute(''' INSERT INTO Pacienti (nume, prenume, data_nastere, varsta, CNP, sex, asigurat)
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', (nume, prenume, data_nastere, varsta, cnp, sex, asigurat))
         conexiune.commit()
+
+def verificare_existenta_pacient(cnp):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Pacienti WHERE CNP = ? ORDER BY IdPacient''' , (cnp,))  
+        return cursor.fetchone()
+
+def get_pacienti():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute(''' SELECT * FROM Pacienti ''')
+        return cursor.fetchall()
+    
+def update_pacienti():
+    pass
+
+def cautare_pacient():
+    pass
+
+
+
 

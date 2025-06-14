@@ -26,7 +26,7 @@ class FereastraOperatori(tkinter.Toplevel):
         self.tabel_operatori = ttk.Treeview(self.frame_tabel, columns=coloane, show='headings',height=11)
 
         for coloana in coloane:
-            self.tabel_operatori.heading(coloana,text=coloana)
+            self.tabel_operatori.heading(coloana,text=coloana, anchor='center')
             self.tabel_operatori.column(coloana,width=90,anchor='center')
 
         self.tabel_operatori.bind("<ButtonRelease-1>", self.load_selected_operator)
