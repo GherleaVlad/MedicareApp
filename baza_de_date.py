@@ -45,9 +45,9 @@ def creare_tabela_pacienti():
                        IdPacient INTEGER PRIMARY KEY AUTOINCREMENT,
                        nume TEXT,
                        prenume TEXT,
-                       data_nastere TEXT,
+                       CNP TEXT,
+                       data_nastere INTEGER,
                        varsta INTEGER,
-                       CNP INTEGER,
                        sex TEXT,
                        asigurat TEXT
                        )
@@ -207,12 +207,12 @@ def update_operator(nume, prenume, sectie, idoperator):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute('''UPDATE Operatori SET nume = ? , prenume = ?, sectie = ? WHERE IdOperator = ? ''', (nume, prenume, sectie, idoperator))
-        conexiune.commit()
-
+        
 def inactivare_operator(idoperator):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
         cursor.execute(''' UPDATE Operatori SET activ = ? WHERE IdOperator = ? ''' , ('0',idoperator))
+        conexiune.commit()
 
 def verificare_operator_dupa_utilizator(utilizator):
     with conectare_baza_date() as conexiune:
@@ -235,11 +235,11 @@ def get_operatori():
 # Functia folosita pentru adaugarea pacientilor in baza de date
 
 
-def insert_pacient(nume, prenume, data_nastere, varsta, cnp, sex, asigurat):
+def insert_pacient(nume, prenume, cnp, data_nastere, varsta,  sex, asigurat):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute(''' INSERT INTO Pacienti (nume, prenume, data_nastere, varsta, CNP, sex, asigurat)
-                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', (nume, prenume, data_nastere, varsta, cnp, sex, asigurat))
+        cursor.execute(''' INSERT INTO Pacienti (nume, prenume, CNP, data_nastere, varsta, sex, asigurat)
+                        VALUES (?, ?, ?, ?, ?, ?, ?) ''', (nume, prenume,  cnp, data_nastere, varsta, sex, asigurat))
         conexiune.commit()
 
 def verificare_existenta_pacient(cnp):

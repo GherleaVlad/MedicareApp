@@ -1,10 +1,9 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from datetime import datetime, date
 from baza_de_date import insert_pacient, get_pacienti, update_pacienti, verificare_existenta_pacient
 from tkinter import messagebox
-from tkcalendar import DateEntry
+
 
 
 '''
@@ -63,17 +62,12 @@ class DatePacient(ttk.Frame):
 
         # LABEL + ENTRY PENTRU DATA DE NASTERE A PACIENTULUI
         tkinter.Label(self.frame_date_personale,text='DATA NASTERE: ').grid(column=2,row=0,padx=5,pady=5)
-        self.entry_varsta = DateEntry(self.frame_date_personale,width=23, date_pattern='dd.mm.yyyy')
-        self.entry_varsta.grid(column=3,row=0,padx=5,pady=5)
+        self.entry_data_nastere = tkinter.Entry(self.frame_date_personale,width=26)
+        self.entry_data_nastere.grid(column=3,row=0,padx=5,pady=5)
 
-        self.varsta_pacient = None
-        tkinter.Button(self.frame_date_personale, text='V', command= lambda: self.calcul_varsta()).grid(column=4, row=0, padx=2, pady=2)
-
-        # LABEL PENTRU VARSTA PACIENTULUI (CALCULATA AUTOMAT IN FUNCTIE DE VARSTA)
         tkinter.Label(self.frame_date_personale,text='VARSTA: ').grid(column=2,row=1,padx=5,pady=5)
-        self.label_varsta = tkinter.Label(self.frame_date_personale,text='')
-        self.label_varsta.grid(column=3,row=1,padx=5,pady=5)
-
+        self.entry_varsta = tkinter.Entry(self.frame_date_personale,width=26)
+        self.entry_varsta.grid(column=3,row=1,padx=5,pady=5)
 
         # LABEL + ENTRY PENTRU DATA DE NASTERE A PACIENTULUI
         tkinter.Label(self.frame_date_personale,text='SEX: ').grid(column=2,row=2,padx=5,pady=5)
@@ -96,12 +90,12 @@ class DatePacient(ttk.Frame):
         tkinter.Button(self.frame_butoane,text='Cautare Pacient').grid(column=1,row=1,padx=5,pady=5)
         
 
-        coloane = ('IdPacient','Nume','Prenume','Data Nasterii','Varsta','CNP','Sex', 'Asigurat')
+        coloane = ('IdPacient','Nume','Prenume','CNP','Data Nasterii', 'Varsta','Sex', 'Asigurat')
         self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
             self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
-            self.tabel_pacient.column(coloana,width=81,anchor='center')
+            self.tabel_pacient.column(coloana,width=95,anchor='center')
 
         self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, pady=(10,10))
 
@@ -121,39 +115,51 @@ class DatePacient(ttk.Frame):
         nume = self.entry_nume.get()
         prenume = self.entry_prenume.get()
         cnp = self.entry_cnp.get()
-        data_nastere = self.entry_varsta.get_date()
-        varsta = self.varsta
+        data_nastere = self.entry_data_nastere.get()
+        varsta = self.entry_varsta.get()
         sex = self.entry_sex.get()
         asigurat = self.asigurat_var.get()
 
         pacient_existent = verificare_existenta_pacient(cnp)
 
-        if pacient_existent:
-            intrebare = messagebox.askyesno('Validare operatie', 'Pacientul a mai fost internat in trecut. Doriti adaugarea unei noi internari?', parent = self)
-            
-            if intrebare:
-                insert_pacient(nume, prenume, data_nastere, varsta, cnp, sex, asigurat)
-                messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
+        if nume and prenume and cnp and data_nastere and varsta and sex :
 
+            if len(cnp) == 13 and cnp.isdigit():
+
+                if int(varsta) > 0 :
+
+                    if pacient_existent:
+                        intrebare = messagebox.askyesno('Validare operatie', 'Pacientul a mai fost internat in trecut. Doriti adaugarea unei noi internari?', parent = self)
+                        
+                        if intrebare:
+                            insert_pacient(nume, prenume, cnp, data_nastere, varsta, sex, asigurat)
+                            messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
+
+                    else:
+                        insert_pacient(nume, prenume, cnp, data_nastere, varsta, sex, asigurat)
+                        messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
+
+                else:
+
+                    messagebox.showerror('EROARE', 'Verificati varsta pacientului!' , parent = self)
+
+            else:
+
+                messagebox.showerror('EROARE', 'Codul numeric personal trebuie sa contina 13 cifre!', parent = self)
 
         else:
-            insert_pacient(nume, prenume, data_nastere, varsta, cnp, sex, asigurat)
-            messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
+
+            messagebox.showerror('EROARE', 'Introduceti toate datele necesare adaugarii pacientului', parent = self)
 
         self.entry_nume.delete(0, tkinter.END)
         self.entry_prenume.delete(0, tkinter.END)
         self.entry_cnp.delete(0, tkinter.END)
-        self.entry_varsta.set_date(date.today())
+        self.entry_data_nastere.delete(0, tkinter.END)
+        self.entry_varsta.delete(0, tkinter.END)
         self.entry_sex.set('')
         self.asigurat_var.set(int('0'))
 
         self.refresh_pacienti()
-
-    def calcul_varsta(self):
-        data_nastere = self.entry_varsta.get_date()
-        data_curenta = datetime.today()
-        self.varsta = data_curenta.year - data_nastere.year
-        self.label_varsta.config(text=f'{self.varsta} ANI')
 
     def modificare_pacient(self):
         pass
@@ -177,63 +183,100 @@ class DatePacient(ttk.Frame):
             self.entry_prenume.delete(0, tkinter.END)
             self.entry_prenume.insert(0, values[2])
 
-            self.entry_varsta.set_date(values[3])
-
-            self.label_varsta.config(text=values[4])
-
             self.entry_cnp.delete(0, tkinter.END)
-            self.entry_cnp.insert(0, values[5])
+            self.entry_cnp.insert(0, values[3])
 
-            self.entry_sex.delete(0, tkinter.END)
-            self.entry_sex.insert(0, values[6])
+            self.entry_data_nastere.delete(0, tkinter.END)
+            self.entry_data_nastere.insert(0, values[4])
 
-            self.asigurat_var.set(int(values[7]))
+            self.entry_varsta.delete(0, tkinter.END)
+            self.entry_varsta.insert(0, values[5])
 
+            self.entry_sex.set(values[6])
 
-
-
-
-
+            self.asigurat_var.set(values[7])
 
 
 class Internare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
+
 
         # FRAME-UL CARE CONTINE DATELE DE INTERNARE ALE PACIENTULUI
         self.frame_date_internare = tkinter.Frame(self)
-        self.frame_date_internare.grid(column=1,row=0, padx=(20,10), pady=(10,10))
-
-        # LABEL + ENTRY PENTRU SECTIA PE CARE VA FI INTERNAT PACIENTUL
-        tkinter.Label(self.frame_date_internare,text='SECTIE: ').grid(column=0,row=0,padx=5,pady=5)
-        self.entry_sectie = ttk.Combobox(self.frame_date_internare, values=['Sectia1','Sectia2'], state='readonly',width=23)
-        self.entry_sectie.grid(column=1, row=0, padx=5, pady=5)
+        self.frame_date_internare.grid(column=0,row=0, padx=(20,10), pady=(10,10))
         
         # LABEL + ENTRY PENTRU MEDICUL TRIMITATOR
-        tkinter.Label(self.frame_date_internare,text='MEDIC TRIMITATOR: ').grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='MEDIC TRIMITATOR: ').grid(column=0,row=0,padx=5,pady=5)
         self.entry_medic_trimitator = ttk.Combobox(self.frame_date_internare, values=['Sectia1','Sectia2'], state='readonly', width=23)
-        self.entry_medic_trimitator.grid(column=1, row=1, padx=5, pady=5)
+        self.entry_medic_trimitator.grid(column=1, row=0, padx=5, pady=5)
 
         # LABEL + ENTRY PENTRU BILETUL DE TRIMITERE
-        tkinter.Label(self.frame_date_internare,text='BILET TRIMITERE: ').grid(column=0,row=2,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='BILET TRIMITERE: ').grid(column=0,row=1,padx=5,pady=5)
         self.entry_bilet_trimitere = tkinter.Entry(self.frame_date_internare, width=26)
-        self.entry_bilet_trimitere.grid(column=1,row=2,padx=5,pady=5)
+        self.entry_bilet_trimitere.grid(column=1,row=1,padx=5,pady=5)
+
+        # LABEL + ENTRY PENTRU DIAGNOSTICUL PREZUMTIV
+        tkinter.Label(self.frame_date_internare,text='DIAGNOSTIC PREZUMTIV: ').grid(column=0,row=2,padx=5,pady=5)
+        self.entry_diagnostic_prezumtiv = tkinter.Entry(self.frame_date_internare, width=26)
+        self.entry_diagnostic_prezumtiv.grid(column=1,row=2,padx=5,pady=5)
+
+        # LABEL + ENTRY PENTRU CODUL DE DIAGNOSTIC
+        tkinter.Label(self.frame_date_internare,text='COD DIAGNOSTIC: ').grid(column=0,row=3,padx=5,pady=5)
+        self.cod_diagnostic = tkinter.Entry(self.frame_date_internare, width=26)
+        self.cod_diagnostic.grid(column=1,row=3,padx=5,pady=5)
+
 
         # LABEL + ENTRY PENTRU MEDICUL CURANT
-        tkinter.Label(self.frame_date_internare,text='MEDICUL CURANT: ').grid(column=0,row=3,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='MEDICUL CURANT: ').grid(column=0,row=4,padx=5,pady=5)
         self.entry_medic_curant = ttk.Combobox(self.frame_date_internare, values=['Medic1','Medic2'], state='readonly', width=23)
-        self.entry_medic_curant.grid(column=1, row=3, padx=5, pady=5)
+        self.entry_medic_curant.grid(column=1, row=4, padx=5, pady=5)
 
-        # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
-        tkinter.Label(self.frame_date_internare,text='DIAGNOSTIC: ').grid(column=0,row=4,padx=5,pady=5)
-        self.entry_diagnostic = tkinter.Entry(self.frame_date_internare, width=26)
-        self.entry_diagnostic.grid(column=1,row=4,padx=5,pady=5)
+        # LABEL + ENTRY PENTRU SECTIA PE CARE VA FI INTERNAT PACIENTUL
+        tkinter.Label(self.frame_date_internare,text='SECTIE: ').grid(column=0,row=5,padx=5,pady=5)
+        self.entry_sectie = ttk.Combobox(self.frame_date_internare, values=['Sectia1','Sectia2'], state='readonly',width=23)
+        self.entry_sectie.grid(column=1, row=5, padx=5, pady=5)
+        
+        # FRAME-UL CARE CONTINE PREZENTAREA PACIENTULUI
+        self.frame_prezentare_pacient = tkinter.Frame(self)
+        self.frame_prezentare_pacient.grid(column=1,row=0, padx=(20,10), pady=(10,10))
+
+        tkinter.Label(self.frame_prezentare_pacient, text='AICI VA FI PREZENTAREA PACIENTULUI').pack()
 
 
 class Externare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
-        self.frame_date_personale = tkinter.Frame(self)
-        self.frame_date_personale.grid(column=0, row=0, padx=(10,20), pady=(10,10))
+        self.frame_date_externare = tkinter.Frame(self)
+        self.frame_date_externare.grid(column=0, row=0, padx=(10,20), pady=(10,10))
+
+        # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
+        tkinter.Label(self.frame_date_externare,text='DATA EXTERNARII: ').grid(column=0,row=0,padx=5,pady=5)
+        self.entry_data_externarii = tkinter.Entry(self.frame_date_externare, width=26)
+        self.entry_data_externarii.grid(column=1,row=0,padx=5,pady=5)
+
+        # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
+        tkinter.Label(self.frame_date_externare,text='DIAGNOSTIC CONFIRMAT: ').grid(column=0,row=0,padx=5,pady=5)
+        self.entry_diagnostic = tkinter.Entry(self.frame_date_externare, width=26)
+        self.entry_diagnostic.grid(column=1,row=0,padx=5,pady=5)
+
+        # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
+        tkinter.Label(self.frame_date_externare,text='ALOCATIE DE HRANA: ').grid(column=0,row=1,padx=5,pady=5)
+        self.entry_alocatie_hrana = ttk.Combobox(self.frame_date_externare,values=['Alocatie1', 'Alocatie2'],state='readonly', width=24)
+        self.entry_alocatie_hrana.grid(column=1,row=1,padx=5,pady=5)
+
+        tkinter.Label(self.frame_date_externare, text='SERVICII EFECTUATE: ').grid(column=0,row=2,padx=5,pady=5)
+        self.entry_servicii_efectuate = ttk.Combobox(self.frame_date_externare,values=['Alocatie1', 'Alocatie2'],state='readonly', width=24)
+        self.entry_servicii_efectuate.grid(column=1,row=2,padx=5,pady=5)
+
+        self.frame_text = tkinter.Frame(self)
+        self.frame_text.grid(column=0, row=1, padx=(10, 20), pady=(10, 10))
+
+        tkinter.Label(self.frame_text, text='RECOMANDARI:').pack(anchor='center', padx=10,pady=10)
+        self.text_recomandari = tkinter.Text(self.frame_text, width=40, height=7)
+        self.text_recomandari.pack()
+
+        tkinter.Label(self.frame_text, text='PLAN DE TRATAMENT:').pack(anchor='center', padx=10,pady=10)
+        self.text_plan_tratament = tkinter.Text(self.frame_text, width=40, height=7)
+        self.text_plan_tratament.pack()
