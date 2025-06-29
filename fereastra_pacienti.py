@@ -1,9 +1,8 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_pacient, get_pacienti, update_pacienti, verificare_existenta_pacient
+from baza_de_date import *
 from tkinter import messagebox
-
 
 
 '''
@@ -17,7 +16,7 @@ class FereastraPacient(tkinter.Toplevel):
         self.title('Pacient') # Numele ferestrei
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
-        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,850,550)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
+        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,950,500)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
 
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
@@ -42,8 +41,7 @@ class DatePacient(ttk.Frame):
         super().__init__(parent)
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
         self.frame_date_personale = tkinter.Frame(self)
-        self.frame_date_personale.grid(column=0, row=0, padx=(10,10), pady=(10,10))
-
+        self.frame_date_personale.grid(column=0, row=0, padx=45, pady=20)
 
         # LABEL + ENTRY PENTRU NUMELE PACIENTULUI
         tkinter.Label(self.frame_date_personale,text='NUME: ').grid(column=0,row=0,padx=5,pady=5)
@@ -82,13 +80,12 @@ class DatePacient(ttk.Frame):
 
 
         self.frame_butoane = tkinter.Frame(self)
-        self.frame_butoane.grid(column=2,row=0, padx=10, pady=(10,10))
+        self.frame_butoane.grid(column=2,row=0, padx=(10,5), pady=20)
 
         tkinter.Button(self.frame_butoane,text='Adaugare Pacient', command=lambda: self.adaugare_pacient()).grid(column=0,row=0,padx=5,pady=5)
-        tkinter.Button(self.frame_butoane,text='Modificare Pacient').grid(column=0,row=1,padx=5,pady=5)
-        tkinter.Button(self.frame_butoane,text='Stergere Pacient').grid(column=1,row=0,padx=5,pady=5)
-        tkinter.Button(self.frame_butoane,text='Cautare Pacient').grid(column=1,row=1,padx=5,pady=5)
-        
+        tkinter.Button(self.frame_butoane,text='Modificare Pacient', command=lambda: self.modificare_pacient()).grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Button(self.frame_butoane,text='Stergere Pacient', command=lambda: self.stergere_pacient()).grid(column=1,row=0,padx=5,pady=5)
+
 
         coloane = ('IdPacient','Nume','Prenume','CNP','Data Nasterii', 'Varsta','Sex', 'Asigurat')
         self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
@@ -97,7 +94,7 @@ class DatePacient(ttk.Frame):
             self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
             self.tabel_pacient.column(coloana,width=95,anchor='center')
 
-        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, pady=(10,10))
+        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, padx=(35,5),pady=10)
 
         self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_pacient)
 
@@ -112,11 +109,11 @@ class DatePacient(ttk.Frame):
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_pacient(self):
-        nume = self.entry_nume.get()
-        prenume = self.entry_prenume.get()
+        nume = self.entry_nume.get().strip()
+        prenume = self.entry_prenume.get().strip()
         cnp = self.entry_cnp.get()
-        data_nastere = self.entry_data_nastere.get()
-        varsta = self.entry_varsta.get()
+        data_nastere = self.entry_data_nastere.get().strip()
+        varsta = self.entry_varsta.get().strip()
         sex = self.entry_sex.get()
         asigurat = self.asigurat_var.get()
 
@@ -162,14 +159,72 @@ class DatePacient(ttk.Frame):
         self.refresh_pacienti()
 
     def modificare_pacient(self):
-        pass
+        idpacient = self.id_pacient
+        nume = self.entry_nume.get().strip()
+        prenume = self.entry_prenume.get().strip()
+        cnp = self.entry_cnp.get()
+        data_nastere = self.entry_data_nastere.get().strip()
+        varsta = self.entry_varsta.get().strip()
+        sex = self.entry_sex.get()
+        asigurat = self.asigurat_var.get()
+
+        if nume and prenume and cnp and data_nastere and varsta and sex:
+            
+            if len(cnp) == 13 and cnp.isdigit():
+
+                intrebare = messagebox.askyesno('CONFIRMARE MODIFICARI', 'Confirmati modificarea datelor pentru pacientul selectat?', parent = self)
+
+                if intrebare:
+
+                    update_pacienti_date(nume, prenume, cnp, data_nastere, varsta, sex, asigurat, idpacient)
+                    messagebox.showinfo('INFO','Datele au fost actualizate', parent = self)
+
+                else:
+                    messagebox.showwarning('AVERTIZARE','Datele nu au fost modificate', parent = self)
+            
+            else:
+
+                messagebox.showerror('EROARE','Codul numeric personal trebuie sa contina 13 cifre!', parent=self)
+
+        else:
+
+            messagebox.showerror('EROARE','Verificati datele introduse', parent = self)
+
+        self.entry_nume.delete(0, tkinter.END)
+        self.entry_prenume.delete(0, tkinter.END)
+        self.entry_cnp.delete(0, tkinter.END)
+        self.entry_data_nastere.delete(0, tkinter.END)
+        self.entry_varsta.delete(0, tkinter.END)
+        self.entry_sex.set('')
+        self.asigurat_var.set(int('0'))
+
+        self.refresh_pacienti()
 
     def stergere_pacient(self):
-        pass
+        idpacient = self.id_pacient
 
-    def cautare_pacient(self):
-        pass
-    
+        if not verificare_existent_internare(idpacient):
+
+            intrebare = messagebox.askyesno('CONFIRMARE STERGERE', 'Confirmati stergerea pacientului?', parent=self)
+
+            if intrebare:
+                stergere_pacient_date(idpacient)
+                messagebox.showinfo('INFO', 'Pacientul a fost sters cu succes', parent = self)
+            else:
+                messagebox.showwarning('AVERTIZARE', 'Operatie de stergere anulata!', parent = self)
+        else:
+            messagebox.showerror('EROARE','Pacientul este internat! Operatiunea de stergere nu poate fi facuta', parent = self)
+        
+        self.entry_nume.delete(0, tkinter.END)
+        self.entry_prenume.delete(0, tkinter.END)
+        self.entry_cnp.delete(0, tkinter.END)
+        self.entry_data_nastere.delete(0, tkinter.END)
+        self.entry_varsta.delete(0, tkinter.END)
+        self.entry_sex.set('')
+        self.asigurat_var.set(int('0'))
+
+        self.refresh_pacienti()
+
     def load_selected_pacient(self, event):
         selected =  self.tabel_pacient.selection()
         if selected:
@@ -196,19 +251,18 @@ class DatePacient(ttk.Frame):
 
             self.asigurat_var.set(values[7])
 
-
+            
 class Internare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-
         # FRAME-UL CARE CONTINE DATELE DE INTERNARE ALE PACIENTULUI
         self.frame_date_internare = tkinter.Frame(self)
-        self.frame_date_internare.grid(column=0,row=0, padx=(20,10), pady=(10,10))
+        self.frame_date_internare.grid(column=0,row=0, padx=10, pady=10)
         
         # LABEL + ENTRY PENTRU MEDICUL TRIMITATOR
         tkinter.Label(self.frame_date_internare,text='MEDIC TRIMITATOR: ').grid(column=0,row=0,padx=5,pady=5)
-        self.entry_medic_trimitator = ttk.Combobox(self.frame_date_internare, values=['Sectia1','Sectia2'], state='readonly', width=23)
+        self.entry_medic_trimitator = ttk.Combobox(self.frame_date_internare, values=utilities.unpack_medici_trimitatori(), state='readonly', width=23)
         self.entry_medic_trimitator.grid(column=1, row=0, padx=5, pady=5)
 
         # LABEL + ENTRY PENTRU BILETUL DE TRIMITERE
@@ -221,30 +275,127 @@ class Internare(ttk.Frame):
         self.entry_diagnostic_prezumtiv = tkinter.Entry(self.frame_date_internare, width=26)
         self.entry_diagnostic_prezumtiv.grid(column=1,row=2,padx=5,pady=5)
 
-        # LABEL + ENTRY PENTRU CODUL DE DIAGNOSTIC
-        tkinter.Label(self.frame_date_internare,text='COD DIAGNOSTIC: ').grid(column=0,row=3,padx=5,pady=5)
-        self.cod_diagnostic = tkinter.Entry(self.frame_date_internare, width=26)
-        self.cod_diagnostic.grid(column=1,row=3,padx=5,pady=5)
-
-
         # LABEL + ENTRY PENTRU MEDICUL CURANT
         tkinter.Label(self.frame_date_internare,text='MEDICUL CURANT: ').grid(column=0,row=4,padx=5,pady=5)
-        self.entry_medic_curant = ttk.Combobox(self.frame_date_internare, values=['Medic1','Medic2'], state='readonly', width=23)
+        self.entry_medic_curant = ttk.Combobox(self.frame_date_internare, values=utilities.unpack_medici(), state='readonly', width=23)
         self.entry_medic_curant.grid(column=1, row=4, padx=5, pady=5)
 
         # LABEL + ENTRY PENTRU SECTIA PE CARE VA FI INTERNAT PACIENTUL
         tkinter.Label(self.frame_date_internare,text='SECTIE: ').grid(column=0,row=5,padx=5,pady=5)
-        self.entry_sectie = ttk.Combobox(self.frame_date_internare, values=['Sectia1','Sectia2'], state='readonly',width=23)
+        self.entry_sectie = ttk.Combobox(self.frame_date_internare, values=utilities.unpack_sectii(), state='readonly',width=23)
         self.entry_sectie.grid(column=1, row=5, padx=5, pady=5)
         
         # FRAME-UL CARE CONTINE PREZENTAREA PACIENTULUI
         self.frame_prezentare_pacient = tkinter.Frame(self)
-        self.frame_prezentare_pacient.grid(column=1,row=0, padx=(20,10), pady=(10,10))
+        self.frame_prezentare_pacient.grid(column=1,row=0, padx=10, pady=10)
 
-        tkinter.Label(self.frame_prezentare_pacient, text='AICI VA FI PREZENTAREA PACIENTULUI').pack()
+        self.label_prezentare = tkinter.Label(self.frame_prezentare_pacient, text='', width=35, height=4)
+        self.label_prezentare.grid(column=0,row=0,padx=10,pady=10)
+
+        self.frame_butoane = tkinter.Frame(self)
+        self.frame_butoane.grid(column=2,row=0,padx=10,pady=10)
+        
+        tkinter.Button(self.frame_butoane,text='Adaugare Internare', command=lambda: self.adaugare_internare()).grid(column=0,row=0,padx=5,pady=5)
+        tkinter.Button(self.frame_butoane,text='Modificare Internare', command=lambda: self.modificare_internare()).grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Button(self.frame_butoane,text='Stergere Internare', command=lambda: self.stergere_internare()).grid(column=1,row=0,padx=5,pady=5)
+
+        coloane = ('IdPacient','Nume','Prenume','Medic Trimitator', 'Bilet Trimitere', 'Diagnostic P', 'Medic Curant', 'Sectie')
+        self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
+
+        for coloana in coloane:
+            self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
+            self.tabel_pacient.column(coloana,width=103,anchor='center')
+
+        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, padx=10,pady=10)
+
+        self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_pacient)
+
+        self.refresh_pacienti()
+
+    def refresh_pacienti(self):
+        
+        for rows in self.tabel_pacient.get_children():
+            self.tabel_pacient.delete(rows)
+
+        for rows in get_pacienti_pentru_internare():
+            self.tabel_pacient.insert("", tkinter.END, values=rows)
+
+    def adaugare_internare(self):
+        idpacient = self.id_pacient
+        medic_trimitator = self.entry_medic_trimitator.get()
+        bilet_trimitere = self.entry_bilet_trimitere.get()
+        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get()
+        medic_curant = self.entry_medic_curant.get()
+        sectie = self.entry_sectie.get()
+
+        if medic_trimitator and bilet_trimitere and diagnostic_prezumtiv and medic_curant and sectie:
+
+            update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+            messagebox.showinfo('INFO','Internare adaugata cu succes!')
+
+
+        else:
+            messagebox.showerror('EROARE','Nu ati completat toate datele necesare!', parent = self)
+
+        self.entry_medic_trimitator.set('')
+        self.entry_bilet_trimitere.delete(0, tkinter.END)
+        self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
+        self.entry_medic_curant.set('')
+        self.entry_sectie.set('')
+        
+        self.refresh_pacienti()
+
+    def modificare_internare(self):
+        idpacient = self.id_pacient
+        medic_trimitator = self.entry_medic_trimitator.get()
+        bilet_trimitere = self.entry_bilet_trimitere.get()
+        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get()
+        medic_curant = self.entry_medic_curant.get()
+        sectie = self.entry_sectie.get()
+
+        if medic_trimitator and bilet_trimitere and diagnostic_prezumtiv and medic_curant and sectie:
+
+            update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+            messagebox.showinfo('INFO','Internare adaugata cu succes!')
+
+
+        else:
+            messagebox.showerror('EROARE','Nu ati completat toate datele necesare!', parent = self)
+
+        self.entry_medic_trimitator.set('')
+        self.entry_bilet_trimitere.delete(0, tkinter.END)
+        self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
+        self.entry_medic_curant.set('')
+        self.entry_sectie.set('')
+        
+        self.refresh_pacienti()
+
+    def stergere_internare(self):
+        pass
+
+    def load_selected_pacient(self, event):
+        selected =  self.tabel_pacient.selection()
+        if selected:
+            values = self.tabel_pacient.item(selected[0])["values"]
+            self.id_pacient = values[0]
+
+            self.entry_medic_trimitator.set(values[3])
+            
+            self.entry_bilet_trimitere.delete(0, tkinter.END)
+            self.entry_bilet_trimitere.insert(0, values[4])
+
+            self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
+            self.entry_diagnostic_prezumtiv.insert(0, values[5])
+            
+            self.entry_medic_curant.set(values[6])
+            self.entry_sectie.set(values[7])
+
+            
+
 
 
 class Externare(ttk.Frame):
+
     def __init__(self, parent):
         super().__init__(parent)
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI

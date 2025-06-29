@@ -4,7 +4,7 @@ contexte din aplicatie
 '''
 
 from datetime import datetime
-from baza_de_date import get_medici_curanti,get_sectii
+from baza_de_date import get_medici_curanti,get_sectii,get_medici_trimitatori
 
 def pozitionare_fereastra_pe_ecran(fereastra,latime_fereastra,inaltime_fereastra):
     '''
@@ -52,3 +52,10 @@ def unpack_sectii():
     else:
         return [sectie[1] for sectie in sectii]
 
+def unpack_medici_trimitatori():
+    medici = get_medici_trimitatori()
+    
+    if medici is None:
+        return ''
+    else:
+        return [f'{medic[1]}  {medic[2]} - {medic[3]}' for medic in medici]
