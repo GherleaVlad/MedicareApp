@@ -31,6 +31,9 @@ class FereastraPacient(tkinter.Toplevel):
         self.frame_internare = Internare(self.notebook)
         self.frame_externare = Externare(self.notebook)
 
+        # asiguram sincronizarea refresh-ului intre tab-uri
+        self.frame_date_pacient.internare_refresh(self.frame_internare.refresh_pacienti)
+
         # POZITIONARE EFECTIVA IN APLICATIE PENTRU TAB-URI
         self.notebook.add(self.frame_date_pacient, text='Date Pacient')
         self.notebook.add(self.frame_internare, text='Internare')
@@ -39,6 +42,7 @@ class FereastraPacient(tkinter.Toplevel):
 class DatePacient(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
+        self._refresh_internare = None
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
         self.frame_date_personale = tkinter.Frame(self)
         self.frame_date_personale.grid(column=0, row=0, padx=45, pady=20)
@@ -100,6 +104,10 @@ class DatePacient(ttk.Frame):
 
         self.refresh_pacienti()
 
+    def internare_refresh(self, callback):
+        """Set function used to refresh internare tab."""
+        self._refresh_internare = callback
+
     def refresh_pacienti(self):
         
         for rows in self.tabel_pacient.get_children():
@@ -107,6 +115,9 @@ class DatePacient(ttk.Frame):
 
         for rows in get_pacienti():
             self.tabel_pacient.insert("", tkinter.END, values=rows)
+
+        if self._refresh_internare:
+            self._refresh_internare()
 
     def adaugare_pacient(self):
         nume = self.entry_nume.get().strip()
@@ -190,13 +201,13 @@ class DatePacient(ttk.Frame):
 
             messagebox.showerror('EROARE','Verificati datele introduse', parent = self)
 
-        self.entry_nume.delete(0, tkinter.END)
-        self.entry_prenume.delete(0, tkinter.END)
-        self.entry_cnp.delete(0, tkinter.END)
-        self.entry_data_nastere.delete(0, tkinter.END)
-        self.entry_varsta.delete(0, tkinter.END)
-        self.entry_sex.set('')
-        self.asigurat_var.set(int('0'))
+        # self.entry_nume.delete(0, tkinter.END)
+        # self.entry_prenume.delete(0, tkinter.END)
+        # self.entry_cnp.delete(0, tkinter.END)
+        # self.entry_data_nastere.delete(0, tkinter.END)
+        # self.entry_varsta.delete(0, tkinter.END)
+        # self.entry_sex.set('')
+        # self.asigurat_var.set(int('0'))
 
         self.refresh_pacienti()
 
@@ -289,7 +300,7 @@ class Internare(ttk.Frame):
         self.frame_prezentare_pacient = tkinter.Frame(self)
         self.frame_prezentare_pacient.grid(column=1,row=0, padx=10, pady=10)
 
-        self.label_prezentare = tkinter.Label(self.frame_prezentare_pacient, text='', width=35, height=4)
+        self.label_prezentare = tkinter.Label(self.frame_prezentare_pacient, text='', width=35, height=5)
         self.label_prezentare.grid(column=0,row=0,padx=10,pady=10)
 
         self.frame_butoane = tkinter.Frame(self)
@@ -331,7 +342,7 @@ class Internare(ttk.Frame):
         if medic_trimitator and bilet_trimitere and diagnostic_prezumtiv and medic_curant and sectie:
 
             update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
-            messagebox.showinfo('INFO','Internare adaugata cu succes!')
+            messagebox.showinfo('INFO','Internare adaugata cu succes!', parent = self)
 
 
         else:
@@ -354,10 +365,15 @@ class Internare(ttk.Frame):
         sectie = self.entry_sectie.get()
 
         if medic_trimitator and bilet_trimitere and diagnostic_prezumtiv and medic_curant and sectie:
+            
+            if not verificare_existent_externare(idpacient):
 
-            update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
-            messagebox.showinfo('INFO','Internare adaugata cu succes!')
+                update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+                messagebox.showinfo('INFO','Internare modificata cu succes!', parent = self)
 
+            else:
+
+                messagebox.showerror('EROARE','Pacientul selectat a fost externat! Datele nu pot fi modificate', parent = self)
 
         else:
             messagebox.showerror('EROARE','Nu ati completat toate datele necesare!', parent = self)
@@ -371,8 +387,39 @@ class Internare(ttk.Frame):
         self.refresh_pacienti()
 
     def stergere_internare(self):
-        pass
+        idpacient = self.id_pacient
 
+        if idpacient:
+
+            if not verificare_existent_externare(idpacient):
+
+                intrebare = messagebox.askyesno('CONFIRMARE STERGERE', 'Doriti stergerea internarii pentru pacientul selectat?' , parent = self)
+
+                if intrebare:
+
+                    stergere_internare(idpacient)
+                    messagebox.showinfo('INFO', 'Internarea pacientului a fost stearsa cu succes!' , parent = self)
+
+            else:
+                
+                messagebox.showerror('EROARE','Pacientul selectat a fost externat! Stergerea internarii nu este posibila', parent = self)
+
+        else:
+
+            messagebox.showerror('EROARE','Selectati un pacient din lista!', parent = self)
+
+        self.entry_medic_trimitator.set('')
+        self.entry_bilet_trimitere.delete(0, tkinter.END)
+        self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
+        self.entry_medic_curant.set('')
+        self.entry_sectie.set('')
+        
+        self.refresh_pacienti()
+
+    def prezentare_pacient(self, idpacient):
+        pacient_selectat = get_pacient_pentru_prezentare(idpacient)
+        self.label_prezentare.config(text=f'PACIENTUL\nNume: {pacient_selectat[0]}\nPrenume: {pacient_selectat[1]}\nCNP: {pacient_selectat[2]}\nData nastere: {pacient_selectat[3]}\nSex: {pacient_selectat[4]}\nStatus: {pacient_selectat[5]}')
+       
     def load_selected_pacient(self, event):
         selected =  self.tabel_pacient.selection()
         if selected:
@@ -390,12 +437,11 @@ class Internare(ttk.Frame):
             self.entry_medic_curant.set(values[6])
             self.entry_sectie.set(values[7])
 
-            
+            self.prezentare_pacient(self.id_pacient)
 
 
 
 class Externare(ttk.Frame):
-
     def __init__(self, parent):
         super().__init__(parent)
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
