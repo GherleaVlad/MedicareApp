@@ -312,6 +312,12 @@ class MediciTrimitatori(ttk.Frame):
                             parafa_noua
                         )
 
+                parafe_json = [parafa.get('parafa') for parafa in data]
+
+                # for medic_existent in parafe_nomenclator:
+                #     if medic_existent not in parafe_json:
+                        
+
 
             messagebox.showinfo('SUCCES', 'Nomenclator încărcat cu succes!', parent=self)
             self.refresh_medici()
