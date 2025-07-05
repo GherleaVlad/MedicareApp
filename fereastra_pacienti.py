@@ -33,6 +33,8 @@ class FereastraPacient(tkinter.Toplevel):
 
         # asiguram sincronizarea refresh-ului intre tab-uri
         self.frame_date_pacient.internare_refresh(self.frame_internare.refresh_pacienti)
+        self.frame_date_pacient.internare_refresh(self.frame_externare.refresh_pacienti)
+
 
         # POZITIONARE EFECTIVA IN APLICATIE PENTRU TAB-URI
         self.notebook.add(self.frame_date_pacient, text='Date Pacient')
@@ -43,6 +45,7 @@ class DatePacient(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self._refresh_internare = None
+        self._refresh_externare = None
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
         self.frame_date_personale = tkinter.Frame(self)
         self.frame_date_personale.grid(column=0, row=0, padx=45, pady=20)
@@ -105,6 +108,10 @@ class DatePacient(ttk.Frame):
         self.refresh_pacienti()
 
     def internare_refresh(self, callback):
+        """Set function used to refresh internare tab."""
+        self._refresh_internare = callback
+
+    def externare_refresh(self, callback):
         """Set function used to refresh internare tab."""
         self._refresh_internare = callback
 
@@ -261,8 +268,7 @@ class DatePacient(ttk.Frame):
             self.entry_sex.set(values[6])
 
             self.asigurat_var.set(values[7])
-
-            
+           
 class Internare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -328,7 +334,7 @@ class Internare(ttk.Frame):
         for rows in self.tabel_pacient.get_children():
             self.tabel_pacient.delete(rows)
 
-        for rows in get_pacienti_pentru_internare():
+        for rows in get_pacienti_internare():
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_internare(self):
@@ -439,41 +445,108 @@ class Internare(ttk.Frame):
 
             self.prezentare_pacient(self.id_pacient)
 
-
-
 class Externare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
         self.frame_date_externare = tkinter.Frame(self)
-        self.frame_date_externare.grid(column=0, row=0, padx=(10,20), pady=(10,10))
+        self.frame_date_externare.grid(column=0, row=0, padx=(10,10), pady=(10,10))
 
-        # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
-        tkinter.Label(self.frame_date_externare,text='DATA EXTERNARII: ').grid(column=0,row=0,padx=5,pady=5)
+        # LABEL + ENTRY PENTRU ZILE SPITALIZARE
+        tkinter.Label(self.frame_date_externare,text='ZILE SPITALIZARE: ').grid(column=0,row=0,padx=5,pady=5)
+        self.entry_zile_spitalizare = tkinter.Entry(self.frame_date_externare, width=26)
+        self.entry_zile_spitalizare.grid(column=1,row=0,padx=5,pady=5)
+
+        tkinter.Label(self.frame_date_externare,text='DATA EXTERNARII: ').grid(column=0,row=1,padx=5,pady=5)
         self.entry_data_externarii = tkinter.Entry(self.frame_date_externare, width=26)
-        self.entry_data_externarii.grid(column=1,row=0,padx=5,pady=5)
+        self.entry_data_externarii.grid(column=1,row=1,padx=5,pady=5)
 
         # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
-        tkinter.Label(self.frame_date_externare,text='DIAGNOSTIC CONFIRMAT: ').grid(column=0,row=0,padx=5,pady=5)
+        tkinter.Label(self.frame_date_externare,text='DIAGNOSTIC CONFIRMAT: ').grid(column=0,row=2,padx=5,pady=5)
         self.entry_diagnostic = tkinter.Entry(self.frame_date_externare, width=26)
-        self.entry_diagnostic.grid(column=1,row=0,padx=5,pady=5)
+        self.entry_diagnostic.grid(column=1,row=2,padx=5,pady=5)
 
         # LABEL + ENTRY PENTRU DIAGNOSTIC INITIAL
-        tkinter.Label(self.frame_date_externare,text='ALOCATIE DE HRANA: ').grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Label(self.frame_date_externare,text='ALOCATIE DE HRANA: ').grid(column=0,row=3,padx=5,pady=5)
         self.entry_alocatie_hrana = ttk.Combobox(self.frame_date_externare,values=['Alocatie1', 'Alocatie2'],state='readonly', width=24)
-        self.entry_alocatie_hrana.grid(column=1,row=1,padx=5,pady=5)
+        self.entry_alocatie_hrana.grid(column=1,row=3,padx=5,pady=5)
 
-        tkinter.Label(self.frame_date_externare, text='SERVICII EFECTUATE: ').grid(column=0,row=2,padx=5,pady=5)
-        self.entry_servicii_efectuate = ttk.Combobox(self.frame_date_externare,values=['Alocatie1', 'Alocatie2'],state='readonly', width=24)
-        self.entry_servicii_efectuate.grid(column=1,row=2,padx=5,pady=5)
+        tkinter.Label(self.frame_date_externare, text='SERVICII EFECTUATE: ').grid(column=0,row=4,padx=5,pady=5)
+        tkinter.Button(self.frame_date_externare, text='SERVICIILE EFECTUATE').grid(column=1,row=4,padx=5,pady=5)
 
         self.frame_text = tkinter.Frame(self)
-        self.frame_text.grid(column=0, row=1, padx=(10, 20), pady=(10, 10))
+        self.frame_text.grid(column=1, row=0, padx=(10, 10), pady=(10, 10))
 
-        tkinter.Label(self.frame_text, text='RECOMANDARI:').pack(anchor='center', padx=10,pady=10)
-        self.text_recomandari = tkinter.Text(self.frame_text, width=40, height=7)
-        self.text_recomandari.pack()
+        tkinter.Label(self.frame_text, text='RECOMANDARI:').grid(column=0,row=0,padx=5,pady=5)
+        self.text_recomandari = tkinter.Text(self.frame_text, width=30, height=7)
+        self.text_recomandari.grid(column=0,row=1,padx=10,pady=5)
 
-        tkinter.Label(self.frame_text, text='PLAN DE TRATAMENT:').pack(anchor='center', padx=10,pady=10)
-        self.text_plan_tratament = tkinter.Text(self.frame_text, width=40, height=7)
-        self.text_plan_tratament.pack()
+        tkinter.Label(self.frame_text, text='PLAN DE TRATAMENT:').grid(column=1,row=0,padx=5,pady=5)
+        self.text_plan_tratament = tkinter.Text(self.frame_text, width=30, height=7)
+        self.text_plan_tratament.grid(column=1,row=1,padx=10,pady=5)
+
+        coloane = ('IdPacient','Nume','Prenume','Zile Spitalizare', 'Data Externarii', 'Diagnostic C', 'Alocatie Hrana')
+        self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
+
+        for coloana in coloane:
+            self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
+            self.tabel_pacient.column(coloana,width=103,anchor='center')
+
+        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, padx=10,pady=10)
+
+        self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_pacient)
+
+        self.refresh_pacienti()
+
+    def refresh_pacienti(self):
+        for rows in self.tabel_pacient.get_children():
+            self.tabel_pacient.delete(rows)
+
+        for rows in get_pacienti_externare():
+            self.tabel_pacient.insert("", tkinter.END, values=rows)
+
+    def adaugare_externare(self):
+        idpacient = self.id_pacient
+        zile_spitalizare = self.entry_zile_spitalizare.get()
+        data_externarii = self.entry_data_externarii.get()
+        diagnostic_confirmat = self.entry_diagnostic.get()
+        alocatie_hrana = self.entry_alocatie_hrana.get()
+
+        if zile_spitalizare and data_externarii and diagnostic_confirmat and alocatie_hrana:
+            update_pacienti_externare(zile_spitalizare, data_externarii, diagnostic_confirmat, alocatie_hrana, idpacient)
+            messagebox.showinfo('INFO','Externare adaugata cu succes!', parent = self)
+
+            self.entry_zile_spitalizare.delete(0, tkinter.END)
+            self.entry_data_externarii.delete(0, tkinter.END)
+            self.entry_diagnostic.delete(0, tkinter.END)
+            self.entry_alocatie_hrana.set('')
+            self.refresh_pacienti()
+
+        else:
+            messagebox.showerror('EROARE', 'Nu ati introdus datele necesare', parent = self)
+
+        self.refresh_pacienti()
+
+    def modificare_externare(self):
+        pass
+
+    def stergere_externare(self):
+        pass
+
+    def load_selected_pacient(self, event):
+        selected =  self.tabel_pacient.selection()
+        if selected:
+            values = self.tabel_pacient.item(selected[0])["values"]
+            self.id_pacient = values[0]
+
+            self.entry_zile_spitalizare.delete(0, tkinter.END)
+            self.entry_zile_spitalizare.set(values[3])
+            
+            self.entry_data_externarii.delete(0, tkinter.END)
+            self.entry_data_externarii.insert(0, values[4])
+
+            self.entry_diagnostic.delete(0, tkinter.END)
+            self.entry_diagnostic.insert(0, values[5])
+            
+            self.entry_alocatie_hrana.set(values[6])
+
