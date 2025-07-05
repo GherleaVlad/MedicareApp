@@ -33,7 +33,7 @@ class FereastraPacient(tkinter.Toplevel):
 
         # asiguram sincronizarea refresh-ului intre tab-uri
         self.frame_date_pacient.internare_refresh(self.frame_internare.refresh_pacienti)
-        self.frame_date_pacient.internare_refresh(self.frame_externare.refresh_pacienti)
+        self.frame_date_pacient.externare_refresh(self.frame_externare.refresh_pacienti)
 
 
         # POZITIONARE EFECTIVA IN APLICATIE PENTRU TAB-URI
@@ -44,6 +44,7 @@ class FereastraPacient(tkinter.Toplevel):
 class DatePacient(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
+        self.id_pacient = None
         self._refresh_internare = None
         self._refresh_externare = None
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
@@ -113,7 +114,7 @@ class DatePacient(ttk.Frame):
 
     def externare_refresh(self, callback):
         """Set function used to refresh internare tab."""
-        self._refresh_internare = callback
+        self._refresh_externare = callback
 
     def refresh_pacienti(self):
         
@@ -125,6 +126,9 @@ class DatePacient(ttk.Frame):
 
         if self._refresh_internare:
             self._refresh_internare()
+
+        if self._refresh_externare:
+            self._refresh_externare()
 
     def adaugare_pacient(self):
         nume = self.entry_nume.get().strip()
@@ -141,7 +145,7 @@ class DatePacient(ttk.Frame):
 
             if len(cnp) == 13 and cnp.isdigit():
 
-                if int(varsta) > 0 :
+                if varsta.isdigit() and int(varsta) > 0 :
 
                     if pacient_existent:
                         intrebare = messagebox.askyesno('Validare operatie', 'Pacientul a mai fost internat in trecut. Doriti adaugarea unei noi internari?', parent = self)
@@ -272,6 +276,7 @@ class DatePacient(ttk.Frame):
 class Internare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
+        self.id_pacient = None
 
         # FRAME-UL CARE CONTINE DATELE DE INTERNARE ALE PACIENTULUI
         self.frame_date_internare = tkinter.Frame(self)
@@ -306,7 +311,7 @@ class Internare(ttk.Frame):
         self.frame_prezentare_pacient = tkinter.Frame(self)
         self.frame_prezentare_pacient.grid(column=1,row=0, padx=10, pady=10)
 
-        self.label_prezentare = tkinter.Label(self.frame_prezentare_pacient, text='', width=35, height=5)
+        self.label_prezentare = tkinter.Label(self.frame_prezentare_pacient, text='', width=35, height=6)
         self.label_prezentare.grid(column=0,row=0,padx=10,pady=10)
 
         self.frame_butoane = tkinter.Frame(self)
@@ -424,7 +429,7 @@ class Internare(ttk.Frame):
 
     def prezentare_pacient(self, idpacient):
         pacient_selectat = get_pacient_pentru_prezentare(idpacient)
-        self.label_prezentare.config(text=f'PACIENTUL\nNume: {pacient_selectat[0]}\nPrenume: {pacient_selectat[1]}\nCNP: {pacient_selectat[2]}\nData nastere: {pacient_selectat[3]}\nSex: {pacient_selectat[4]}\nStatus: {pacient_selectat[5]}')
+        self.label_prezentare.config(text=f'PACIENTUL\nNume: {pacient_selectat[0]}\nPrenume: {pacient_selectat[1]}\nCNP: {pacient_selectat[2]}\nData nastere: {pacient_selectat[3]}\nVarsta:{pacient_selectat[4]}\nSex: {pacient_selectat[5]}\nStatus: {pacient_selectat[6]}')
        
     def load_selected_pacient(self, event):
         selected =  self.tabel_pacient.selection()
@@ -448,6 +453,7 @@ class Internare(ttk.Frame):
 class Externare(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
+        self.id_pacient = None
         # FRAME-UL CARE CONTINE DATELE PERSONALE ALE PACIENTULUI
         self.frame_date_externare = tkinter.Frame(self)
         self.frame_date_externare.grid(column=0, row=0, padx=(10,10), pady=(10,10))
@@ -540,7 +546,7 @@ class Externare(ttk.Frame):
             self.id_pacient = values[0]
 
             self.entry_zile_spitalizare.delete(0, tkinter.END)
-            self.entry_zile_spitalizare.set(values[3])
+            self.entry_zile_spitalizare.insert(0, values[3])
             
             self.entry_data_externarii.delete(0, tkinter.END)
             self.entry_data_externarii.insert(0, values[4])

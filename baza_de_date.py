@@ -270,13 +270,13 @@ def update_pacienti_date(nume, prenume, cnp, data_nastere, varsta, sex, asigurat
         cursor = conexiune.cursor()
         cursor.execute('''UPDATE Pacienti 
                        SET nume = ? , prenume = ?, CNP = ?, data_nastere = ?, varsta = ?, sex = ?, asigurat = ?
-                       WHERE IdPacient = ? AND data_externarii IS NOT 'NULL' ''',(nume, prenume, cnp, data_nastere, varsta, sex, asigurat, idpacient))
+                       WHERE IdPacient = ? AND data_externarii IS NOT NULL ''',(nume, prenume, cnp, data_nastere, varsta, sex, asigurat, idpacient))
         conexiune.commit()
 
 def stergere_pacient_date(idpacient):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''DELETE FROM Pacienti WHERE idpacient = ? AND sectie IS 'NULL' ''', (idpacient,))
+        cursor.execute('''DELETE FROM Pacienti WHERE idpacient = ? AND sectie IS NULL ''', (idpacient,))
         conexiune.commit()
 
 # Internare
@@ -284,7 +284,7 @@ def stergere_pacient_date(idpacient):
 def verificare_existent_internare(idpacient):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute(''' SELECT * FROM Pacienti WHERE idpacient = ? AND sectie IS 'NULL' ''', (idpacient,))
+        cursor.execute(''' SELECT * FROM Pacienti WHERE idpacient = ? AND sectie IS NULL ''', (idpacient,))
         return cursor.fetchone()
 
 def update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient):
@@ -318,7 +318,7 @@ def get_pacient_pentru_prezentare(idpacient):
                         nume,
                         prenume,
                         cnp,
-                        data_nastere
+                        data_nastere,
                         varsta,
                         CASE
                             WHEN sex = 'F' THEN 'Feminin'
@@ -339,9 +339,8 @@ def stergere_internare(idpacient):
         cursor = conexiune.cursor()
         cursor.execute('''UPDATE Pacienti 
                        SET medic_trimitator = ? , bilet_trimitere = ?, diagnostic_prezumtiv = ?, medic_curant = ?, sectie = ? 
-                       WHERE IdPacient = ?  AND data_externarii IS NOT 'NULL' ''',('', '', '', '', '', idpacient))
+                       WHERE IdPacient = ?  AND data_externarii IS NOT NULL ''',('', '', '', '', '', idpacient))
         conexiune.commit()
-
 
 # Externare
 
@@ -363,7 +362,7 @@ def get_pacienti_externare():
 def verificare_existent_externare(idpacient):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute(''' SELECT * FROM Pacienti WHERE idpacient = ? AND data_externarii IS NOT 'NULL' ''', (idpacient,))
+        cursor.execute(''' SELECT * FROM Pacienti WHERE idpacient = ? AND data_externarii IS NOT NULL ''', (idpacient,))
         return cursor.fetchone()
 
 def update_pacienti_externare(zile_spitalizare, data_externarii, diagnostic_confirmat, alocatie_hrana, idpacient):
