@@ -8,6 +8,8 @@ if __name__ == '__main__':
     baza_de_date.creare_tabela_sectii()
     baza_de_date.creare_tabela_medici_trimitatori()
     baza_de_date.creare_tabela_medici_curanti()
+    baza_de_date.creare_tabela_servicii()
+    baza_de_date.creare_tabela_pacienti_servicii()
     app = MeniuPrincipal()
     app.mainloop()
 

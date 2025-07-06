@@ -154,9 +154,25 @@ class DatePacient(ttk.Frame):
                             insert_pacient(nume, prenume, cnp, data_nastere, varsta, sex, asigurat)
                             messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
 
+                            self.entry_nume.delete(0, tkinter.END)
+                            self.entry_prenume.delete(0, tkinter.END)
+                            self.entry_cnp.delete(0, tkinter.END)
+                            self.entry_data_nastere.delete(0, tkinter.END)
+                            self.entry_varsta.delete(0, tkinter.END)
+                            self.entry_sex.set('')
+                            self.asigurat_var.set(int('0'))
+
                     else:
                         insert_pacient(nume, prenume, cnp, data_nastere, varsta, sex, asigurat)
                         messagebox.showinfo('INFO', 'Pacientul a fost adaugat cu succes!', parent = self)
+                        
+                        self.entry_nume.delete(0, tkinter.END)
+                        self.entry_prenume.delete(0, tkinter.END)
+                        self.entry_cnp.delete(0, tkinter.END)
+                        self.entry_data_nastere.delete(0, tkinter.END)
+                        self.entry_varsta.delete(0, tkinter.END)
+                        self.entry_sex.set('')
+                        self.asigurat_var.set(int('0'))
 
                 else:
 
@@ -169,14 +185,6 @@ class DatePacient(ttk.Frame):
         else:
 
             messagebox.showerror('EROARE', 'Introduceti toate datele necesare adaugarii pacientului', parent = self)
-
-        self.entry_nume.delete(0, tkinter.END)
-        self.entry_prenume.delete(0, tkinter.END)
-        self.entry_cnp.delete(0, tkinter.END)
-        self.entry_data_nastere.delete(0, tkinter.END)
-        self.entry_varsta.delete(0, tkinter.END)
-        self.entry_sex.set('')
-        self.asigurat_var.set(int('0'))
 
         self.refresh_pacienti()
 
@@ -203,6 +211,14 @@ class DatePacient(ttk.Frame):
 
                 else:
                     messagebox.showwarning('AVERTIZARE','Datele nu au fost modificate', parent = self)
+      
+                    self.entry_nume.delete(0, tkinter.END)
+                    self.entry_prenume.delete(0, tkinter.END)
+                    self.entry_cnp.delete(0, tkinter.END)
+                    self.entry_data_nastere.delete(0, tkinter.END)
+                    self.entry_varsta.delete(0, tkinter.END)
+                    self.entry_sex.set('')
+                    self.asigurat_var.set(int('0'))
             
             else:
 
@@ -211,14 +227,6 @@ class DatePacient(ttk.Frame):
         else:
 
             messagebox.showerror('EROARE','Verificati datele introduse', parent = self)
-
-        # self.entry_nume.delete(0, tkinter.END)
-        # self.entry_prenume.delete(0, tkinter.END)
-        # self.entry_cnp.delete(0, tkinter.END)
-        # self.entry_data_nastere.delete(0, tkinter.END)
-        # self.entry_varsta.delete(0, tkinter.END)
-        # self.entry_sex.set('')
-        # self.asigurat_var.set(int('0'))
 
         self.refresh_pacienti()
 
@@ -345,8 +353,8 @@ class Internare(ttk.Frame):
     def adaugare_internare(self):
         idpacient = self.id_pacient
         medic_trimitator = self.entry_medic_trimitator.get()
-        bilet_trimitere = self.entry_bilet_trimitere.get()
-        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get()
+        bilet_trimitere = self.entry_bilet_trimitere.get().strip()
+        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get().strip()
         medic_curant = self.entry_medic_curant.get()
         sectie = self.entry_sectie.get()
 
@@ -370,8 +378,8 @@ class Internare(ttk.Frame):
     def modificare_internare(self):
         idpacient = self.id_pacient
         medic_trimitator = self.entry_medic_trimitator.get()
-        bilet_trimitere = self.entry_bilet_trimitere.get()
-        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get()
+        bilet_trimitere = self.entry_bilet_trimitere.get().strip()
+        diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get().strip()
         medic_curant = self.entry_medic_curant.get()
         sectie = self.entry_sectie.get()
 
@@ -478,7 +486,10 @@ class Externare(ttk.Frame):
         self.entry_alocatie_hrana.grid(column=1,row=3,padx=5,pady=5)
 
         tkinter.Label(self.frame_date_externare, text='SERVICII EFECTUATE: ').grid(column=0,row=4,padx=5,pady=5)
-        tkinter.Button(self.frame_date_externare, text='SERVICIILE EFECTUATE').grid(column=1,row=4,padx=5,pady=5)
+        tkinter.Button(self.frame_date_externare, text='SERVICIILE EFECTUATE',command=lambda: self.adaugare_servicii()).grid(column=1,row=4,padx=5,pady=5)
+
+        tkinter.Button(self.frame_date_externare,text='ADAUGARE EXTERNARE', command=lambda: self.adaugare_externare()).grid(column=0,row=5,padx=5,pady=5)
+        tkinter.Button(self.frame_date_externare,text='MODIFICARE EXTERNARE', command=lambda: self. modificare_externare()).grid(column=1,row=5,padx=5,pady=5)
 
         self.frame_text = tkinter.Frame(self)
         self.frame_text.grid(column=1, row=0, padx=(10, 10), pady=(10, 10))
@@ -490,6 +501,8 @@ class Externare(ttk.Frame):
         tkinter.Label(self.frame_text, text='PLAN DE TRATAMENT:').grid(column=1,row=0,padx=5,pady=5)
         self.text_plan_tratament = tkinter.Text(self.frame_text, width=30, height=7)
         self.text_plan_tratament.grid(column=1,row=1,padx=10,pady=5)
+
+        tkinter.Button(self.frame_text,text='STERGERE EXTERNARE', command= lambda: self.stergere_externare()).grid(column=0,row=2,padx=5,pady=5)
 
         coloane = ('IdPacient','Nume','Prenume','Zile Spitalizare', 'Data Externarii', 'Diagnostic C', 'Alocatie Hrana')
         self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
@@ -513,19 +526,23 @@ class Externare(ttk.Frame):
 
     def adaugare_externare(self):
         idpacient = self.id_pacient
-        zile_spitalizare = self.entry_zile_spitalizare.get()
-        data_externarii = self.entry_data_externarii.get()
-        diagnostic_confirmat = self.entry_diagnostic.get()
+        zile_spitalizare = self.entry_zile_spitalizare.get().strip()
+        data_externarii = self.entry_data_externarii.get().strip()
+        diagnostic_confirmat = self.entry_diagnostic.get().strip()
         alocatie_hrana = self.entry_alocatie_hrana.get()
+        recomandari = self.text_recomandari.get("1.0", "end-1c").strip()
+        plan_tratament = self.text_plan_tratament.get("1.0", "end-1c").strip()
 
         if zile_spitalizare and data_externarii and diagnostic_confirmat and alocatie_hrana:
-            update_pacienti_externare(zile_spitalizare, data_externarii, diagnostic_confirmat, alocatie_hrana, idpacient)
+            update_pacienti_externare(zile_spitalizare, data_externarii, diagnostic_confirmat, alocatie_hrana, recomandari, plan_tratament, idpacient)
             messagebox.showinfo('INFO','Externare adaugata cu succes!', parent = self)
 
             self.entry_zile_spitalizare.delete(0, tkinter.END)
             self.entry_data_externarii.delete(0, tkinter.END)
             self.entry_diagnostic.delete(0, tkinter.END)
             self.entry_alocatie_hrana.set('')
+            self.text_recomandari.delete("1.0", "end")
+            self.text_plan_tratament.delete("1.0", "end")
             self.refresh_pacienti()
 
         else:
@@ -534,10 +551,67 @@ class Externare(ttk.Frame):
         self.refresh_pacienti()
 
     def modificare_externare(self):
-        pass
+        idpacient = self.id_pacient
+        zile_spitalizare = self.entry_zile_spitalizare.get().strip()
+        data_externarii = self.entry_data_externarii.get().strip()
+        diagnostic_confirmat = self.entry_diagnostic.get().strip()
+        alocatie_hrana = self.entry_alocatie_hrana.get()
+        recomandari = self.text_recomandari.get("1.0", "end-1c").strip()
+        plan_tratament = self.text_plan_tratament.get("1.0", "end-1c").strip()
+
+        if zile_spitalizare and data_externarii and diagnostic_confirmat and alocatie_hrana:
+            
+            intrebare = messagebox.askyesno('CONFIRMARE MODIFICARI', 'Confirmati modificarea externarii pentru pacientul selectat?', parent = self)
+            
+            if intrebare:
+                update_pacienti_externare(zile_spitalizare, data_externarii, diagnostic_confirmat, alocatie_hrana, recomandari, plan_tratament, idpacient)
+                messagebox.showinfo('INFO','Externare modificata cu succes!', parent = self)
+
+                self.entry_zile_spitalizare.delete(0, tkinter.END)
+                self.entry_data_externarii.delete(0, tkinter.END)
+                self.entry_diagnostic.delete(0, tkinter.END)
+                self.entry_alocatie_hrana.set('')
+                self.text_recomandari.delete("1.0", "end")
+                self.text_plan_tratament.delete("1.0", "end")
+                self.refresh_pacienti()
+
+            else: 
+                messagebox.showwarning('INFO','Operatiune de modificare a externarii anulata!', parent = self)
+
+        else:
+            messagebox.showerror('EROARE', 'Nu ati introdus datele necesare', parent = self)
+        
+        self.refresh_pacienti()
 
     def stergere_externare(self):
-        pass
+        
+        id_pacient = self.id_pacient
+
+        if id_pacient:
+
+            intrebare = messagebox.askyesno('CONFIRMARE STERGERE','Confirmati stergerea externarii pentru pacientul selectat?', parent = self)
+
+            if intrebare:
+
+                stergere_externare(id_pacient)
+                messagebox.showinfo('INFO', 'Externare a fost stearsa cu succes', parent = self)
+
+                self.entry_zile_spitalizare.delete(0, tkinter.END)
+                self.entry_data_externarii.delete(0, tkinter.END)
+                self.entry_diagnostic.delete(0, tkinter.END)
+                self.entry_alocatie_hrana.set('')
+                self.text_recomandari.delete("1.0", "end")
+                self.text_plan_tratament.delete("1.0", "end")
+                self.refresh_pacienti()
+
+            else:
+
+                messagebox.showwarning('INFO', 'Operatiune de stergere a externarii anulata!', parent = self)
+        else:
+            messagebox.showerror('EROARE','Selectati un pacient din lista!', parent = self)
+
+
+        self.refresh_pacienti()
 
     def load_selected_pacient(self, event):
         selected =  self.tabel_pacient.selection()
@@ -555,4 +629,80 @@ class Externare(ttk.Frame):
             self.entry_diagnostic.insert(0, values[5])
             
             self.entry_alocatie_hrana.set(values[6])
+
+            self.text_recomandari.delete("1.0", "end")
+            self.text_recomandari.insert("1.0", values[7])
+
+            self.text_plan_tratament.delete("1.0", "end")
+            self.text_plan_tratament.insert("1.0", values[8])
+
+    def adaugare_servicii(self):
+        """Function to add services for the patient."""
+        if not self.id_pacient:
+            messagebox.showerror('EROARE', 'Selectati un pacient din lista!', parent=self)
+        else:
+            # Creeaza o noua fereastra pentru adaugarea serviciilor
+            fereastra_servicii = tkinter.Toplevel(self)
+            fereastra_servicii.title("Adaugare Servicii")
+            fereastra_servicii.geometry("550x600")
+            fereastra_servicii.resizable(False, False)
+
+            # Preia lista de servicii din baza de date
+            try:
+                lista_servicii = get_lista_servicii()
+            except Exception as e:
+                messagebox.showerror('EROARE', f"Eroare la preluarea serviciilor: {e}", parent=fereastra_servicii)
+                fereastra_servicii.destroy()
+                return
+
+            # Creeaza un frame pentru lista de servicii cu scroll
+            frame_lista = tkinter.Frame(fereastra_servicii)
+            frame_lista.grid(column=0,row=0, columnspan=3, padx=(40,40), pady=(10,10))
+
+            lista_box = tkinter.Listbox(frame_lista, selectmode="multiple", width=43, height=15, font=("Arial", 10))
+            for serviciu in lista_servicii:
+                lista_box.insert(tkinter.END, f"ID: {serviciu[0]} - {serviciu[1]} - {serviciu[2]}".center(50))
+            # lista_box.pack(side="left", fill="both", expand=True)
+            lista_box.pack()
+
+            def adauga_la_pacient():
+                selectii = lista_box.curselection()
+                if not selectii:
+                    messagebox.showwarning("ATENTIE", "Selectati cel putin un serviciu!", parent=fereastra_servicii)
+                else:
+                    iduri_servicii = [lista_servicii[i][0] for i in selectii]
+                    try:
+                        for id_serviciu in iduri_servicii:
+                            adauga_serviciu_la_pacient(self.id_pacient, id_serviciu)  # Functie care face legatura in BD
+                        messagebox.showinfo("Succes", "Serviciile au fost adaugate pacientului!", parent=fereastra_servicii)
+                    except Exception as e:
+                        messagebox.showerror("EROARE", f"Eroare la adaugarea serviciilor: {e}", parent=fereastra_servicii)
+
+            tkinter.Button(fereastra_servicii, text="Adauga serviciile selectate", command=adauga_la_pacient).grid(column=0, row=1,padx=(40,5),pady=(10,10))
+            tkinter.Button(fereastra_servicii, text="Stergere servicii selectate").grid(column=1, row=1,padx=(5,5),pady=(10,10))
+            tkinter.Button(fereastra_servicii, text="Configurare servicii").grid(column=2, row=1,padx=(5,40),pady=(10,10))
+
+             # Frame pentru Treeview cu serviciile deja adaugate
+            frame_tabel = tkinter.Frame(fereastra_servicii)
+            frame_tabel.grid(column=0, row=2, columnspan=3, padx=5, pady=5)
+
+            tkinter.Label(frame_tabel, text="Servicii adaugate pacientului:").pack()
+            coloane = ("ID", "Denumire", "Valoare")
+            tree_servicii = ttk.Treeview(frame_tabel, columns=coloane, show="headings", height=8)
+            for col in coloane:
+                tree_servicii.heading(col, text=col)
+                tree_servicii.column(col, width=120, anchor="center")
+            tree_servicii.pack()
+
+            def refresh_treeview_servicii():
+                # Sterge tot
+                for row in tree_servicii.get_children():
+                    tree_servicii.delete(row)
+
+                # Adauga serviciile pacientului
+                servicii_pacient = get_servicii_pacient(self.id_pacient)
+                for srv in servicii_pacient:
+                    tree_servicii.insert("", "end", values=srv)
+
+            refresh_treeview_servicii()
 

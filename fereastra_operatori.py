@@ -16,6 +16,8 @@ class FereastraOperatori(tkinter.Toplevel):
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,1050,300)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
 
+        self.id_operator = None
+
         self.frame_tabel = tkinter.Frame(self)
         self.frame_tabel.grid(column=1,row=0,padx=(20,20),pady=(20,20))
         
