@@ -668,30 +668,30 @@ class Externare(ttk.Frame):
             def adauga_la_pacient():
                 selectii = lista_box.curselection()
                 if not selectii:
-                    messagebox.showwarning("ATENTIE", "Selectati cel putin un serviciu!", parent=fereastra_servicii)
+                    messagebox.showerror("EROARE", "Selectati cel putin un serviciu din lista!", parent=fereastra_servicii)
                 else:
                     iduri_servicii = [lista_servicii[i][0] for i in selectii]
                     try:
                         for id_serviciu in iduri_servicii:
                             adauga_serviciu_la_pacient(self.id_pacient, id_serviciu)  # Functie care face legatura in BD
                         messagebox.showinfo("Succes", "Serviciile au fost adaugate pacientului!", parent=fereastra_servicii)
+                        refresh_treeview_servicii()
                     except Exception as e:
                         messagebox.showerror("EROARE", f"Eroare la adaugarea serviciilor: {e}", parent=fereastra_servicii)
 
-            tkinter.Button(fereastra_servicii, text="Adauga serviciile selectate", command=adauga_la_pacient).grid(column=0, row=1,padx=(40,5),pady=(10,10))
-            tkinter.Button(fereastra_servicii, text="Stergere servicii selectate").grid(column=1, row=1,padx=(5,5),pady=(10,10))
-            tkinter.Button(fereastra_servicii, text="Configurare servicii").grid(column=2, row=1,padx=(5,40),pady=(10,10))
+            tkinter.Button(fereastra_servicii, text="Adauga serviciile selectate", command=lambda: adauga_la_pacient()).grid(column=0, row=1,padx=(40,5),pady=(10,10))
+            tkinter.Button(fereastra_servicii, text="Stergere serviciu selectat", command=lambda: sterge_serviciu_selectat()).grid(column=1, row=1,padx=(5,5),pady=(10,10))
 
-             # Frame pentru Treeview cu serviciile deja adaugate
+            # Frame pentru Treeview cu serviciile deja adaugate
             frame_tabel = tkinter.Frame(fereastra_servicii)
             frame_tabel.grid(column=0, row=2, columnspan=3, padx=5, pady=5)
 
             tkinter.Label(frame_tabel, text="Servicii adaugate pacientului:").pack()
             coloane = ("ID", "Denumire", "Valoare")
             tree_servicii = ttk.Treeview(frame_tabel, columns=coloane, show="headings", height=8)
-            for col in coloane:
-                tree_servicii.heading(col, text=col)
-                tree_servicii.column(col, width=120, anchor="center")
+            for coloana in coloane:
+                tree_servicii.heading(coloana, text=coloana, anchor="center")
+                tree_servicii.column(coloana, width=120, anchor="center")
             tree_servicii.pack()
 
             def refresh_treeview_servicii():
@@ -701,8 +701,24 @@ class Externare(ttk.Frame):
 
                 # Adauga serviciile pacientului
                 servicii_pacient = get_servicii_pacient(self.id_pacient)
-                for srv in servicii_pacient:
-                    tree_servicii.insert("", "end", values=srv)
+                for servicii in servicii_pacient:
+                    tree_servicii.insert("", "end", values=servicii)
 
+
+            def sterge_serviciu_selectat():
+                selected = tree_servicii.selection()
+                if selected:
+                    item = selected[0]   
+                    valoare = tree_servicii.item(item, "values")
+                    id_serviciu = valoare[0]
+                    try:
+                        sterge_serviciu_pacient(self.id_pacient, id_serviciu)
+                        tree_servicii.delete(item)
+                    except Exception as e:
+                        messagebox.showerror("EROARE", f"Eroare la stergerea serviciului: {e}", parent=fereastra_servicii)
+                    refresh_treeview_servicii()
+                else: 
+                    messagebox.showerror("EROARE", "Selectati un serviciu din lista de jos pentru stergere!", parent=fereastra_servicii)
+                    
             refresh_treeview_servicii()
 

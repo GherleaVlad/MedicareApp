@@ -454,3 +454,15 @@ def get_servicii_pacient(id_pacient):
     """, (id_pacient,))
     rezultate = cursor.fetchall()
     return rezultate
+
+def sterge_serviciu_pacient(id_pacient, id_serviciu):
+    """
+    Sterge serviciul cu id_serviciu pentru pacientul cu id_pacient din tabela de legatura.
+    """
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute(
+        ''' DELETE FROM pacienti_servicii WHERE id_pacient = ? AND id_serviciu = ? ''',
+        (id_pacient, id_serviciu)
+    )
+        conexiune.commit()
