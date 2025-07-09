@@ -16,7 +16,7 @@ class FereastraPacient(tkinter.Toplevel):
         self.title('Pacient') # Numele ferestrei
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
-        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,950,500)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
+        self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,960,500)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
 
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
@@ -102,7 +102,7 @@ class DatePacient(ttk.Frame):
             self.tabel_pacient.heading(coloana,text=coloana,anchor='center')
             self.tabel_pacient.column(coloana,width=95,anchor='center')
 
-        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, padx=(35,5),pady=10)
+        self.tabel_pacient.grid(column=0,row=1,columnspan=3,rowspan=2, padx=(45,5),pady=10)
 
         self.tabel_pacient.bind("<ButtonRelease-1>", self.load_selected_pacient)
 
@@ -291,19 +291,24 @@ class Internare(ttk.Frame):
         self.frame_date_internare.grid(column=0,row=0, padx=10, pady=10)
         
         # LABEL + ENTRY PENTRU MEDICUL TRIMITATOR
-        tkinter.Label(self.frame_date_internare,text='MEDIC TRIMITATOR: ').grid(column=0,row=0,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='DATA INTERNARE: ').grid(column=0,row=0,padx=5,pady=5)
+        self.entry_data_internare = tkinter.Entry(self.frame_date_internare, width=26)
+        self.entry_data_internare.grid(column=1, row=0, padx=5, pady=5)
+
+        # LABEL + ENTRY PENTRU MEDICUL TRIMITATOR
+        tkinter.Label(self.frame_date_internare,text='MEDIC TRIMITATOR: ').grid(column=0,row=1,padx=5,pady=5)
         self.entry_medic_trimitator = ttk.Combobox(self.frame_date_internare, values=utilities.unpack_medici_trimitatori(), state='readonly', width=23)
-        self.entry_medic_trimitator.grid(column=1, row=0, padx=5, pady=5)
+        self.entry_medic_trimitator.grid(column=1, row=1, padx=5, pady=5)
 
         # LABEL + ENTRY PENTRU BILETUL DE TRIMITERE
-        tkinter.Label(self.frame_date_internare,text='BILET TRIMITERE: ').grid(column=0,row=1,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='BILET TRIMITERE: ').grid(column=0,row=2,padx=5,pady=5)
         self.entry_bilet_trimitere = tkinter.Entry(self.frame_date_internare, width=26)
-        self.entry_bilet_trimitere.grid(column=1,row=1,padx=5,pady=5)
+        self.entry_bilet_trimitere.grid(column=1,row=2,padx=5,pady=5)
 
         # LABEL + ENTRY PENTRU DIAGNOSTICUL PREZUMTIV
-        tkinter.Label(self.frame_date_internare,text='DIAGNOSTIC PREZUMTIV: ').grid(column=0,row=2,padx=5,pady=5)
+        tkinter.Label(self.frame_date_internare,text='DIAGNOSTIC PREZUMTIV: ').grid(column=0,row=3,padx=5,pady=5)
         self.entry_diagnostic_prezumtiv = tkinter.Entry(self.frame_date_internare, width=26)
-        self.entry_diagnostic_prezumtiv.grid(column=1,row=2,padx=5,pady=5)
+        self.entry_diagnostic_prezumtiv.grid(column=1,row=3,padx=5,pady=5)
 
         # LABEL + ENTRY PENTRU MEDICUL CURANT
         tkinter.Label(self.frame_date_internare,text='MEDICUL CURANT: ').grid(column=0,row=4,padx=5,pady=5)
@@ -329,7 +334,7 @@ class Internare(ttk.Frame):
         tkinter.Button(self.frame_butoane,text='Modificare Internare', command=lambda: self.modificare_internare()).grid(column=0,row=1,padx=5,pady=5)
         tkinter.Button(self.frame_butoane,text='Stergere Internare', command=lambda: self.stergere_internare()).grid(column=1,row=0,padx=5,pady=5)
 
-        coloane = ('IdPacient','Nume','Prenume','Medic Trimitator', 'Bilet Trimitere', 'Diagnostic P', 'Medic Curant', 'Sectie')
+        coloane = ('IdPacient', 'Nume', 'Prenume', 'Data Internare', 'Medic Trimitator', 'Bilet Trimitere', 'Diagnostic P', 'Medic Curant', 'Sectie')
         self.tabel_pacient = ttk.Treeview(self, columns=coloane, show='headings')
 
         for coloana in coloane:
@@ -352,6 +357,7 @@ class Internare(ttk.Frame):
 
     def adaugare_internare(self):
         idpacient = self.id_pacient
+        data_internare = self.entry_data_internare.get().strip()
         medic_trimitator = self.entry_medic_trimitator.get()
         bilet_trimitere = self.entry_bilet_trimitere.get().strip()
         diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get().strip()
@@ -360,13 +366,14 @@ class Internare(ttk.Frame):
 
         if medic_trimitator and bilet_trimitere and diagnostic_prezumtiv and medic_curant and sectie:
 
-            update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+            update_pacienti_internare(data_internare, medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
             messagebox.showinfo('INFO','Internare adaugata cu succes!', parent = self)
 
 
         else:
             messagebox.showerror('EROARE','Nu ati completat toate datele necesare!', parent = self)
 
+        self.entry_data_internare.delete(0, tkinter.END)
         self.entry_medic_trimitator.set('')
         self.entry_bilet_trimitere.delete(0, tkinter.END)
         self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
@@ -377,6 +384,7 @@ class Internare(ttk.Frame):
 
     def modificare_internare(self):
         idpacient = self.id_pacient
+        data_internare = self.entry_data_internare.get().strip()
         medic_trimitator = self.entry_medic_trimitator.get()
         bilet_trimitere = self.entry_bilet_trimitere.get().strip()
         diagnostic_prezumtiv = self.entry_diagnostic_prezumtiv.get().strip()
@@ -387,7 +395,7 @@ class Internare(ttk.Frame):
             
             if not verificare_existent_externare(idpacient):
 
-                update_pacienti_internare(medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+                update_pacienti_internare(data_internare, medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
                 messagebox.showinfo('INFO','Internare modificata cu succes!', parent = self)
 
             else:
@@ -397,6 +405,7 @@ class Internare(ttk.Frame):
         else:
             messagebox.showerror('EROARE','Nu ati completat toate datele necesare!', parent = self)
 
+        self.entry_data_internare.delete(0, tkinter.END)
         self.entry_medic_trimitator.set('')
         self.entry_bilet_trimitere.delete(0, tkinter.END)
         self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
@@ -426,7 +435,8 @@ class Internare(ttk.Frame):
         else:
 
             messagebox.showerror('EROARE','Selectati un pacient din lista!', parent = self)
-
+        
+        self.entry_data_internare.delete(0, tkinter.END)
         self.entry_medic_trimitator.set('')
         self.entry_bilet_trimitere.delete(0, tkinter.END)
         self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
@@ -445,16 +455,19 @@ class Internare(ttk.Frame):
             values = self.tabel_pacient.item(selected[0])["values"]
             self.id_pacient = values[0]
 
-            self.entry_medic_trimitator.set(values[3])
+            self.entry_data_internare.delete(0, tkinter.END)
+            self.entry_data_internare.insert(0, values[3])
+
+            self.entry_medic_trimitator.set(values[4])
             
             self.entry_bilet_trimitere.delete(0, tkinter.END)
-            self.entry_bilet_trimitere.insert(0, values[4])
+            self.entry_bilet_trimitere.insert(0, values[5])
 
             self.entry_diagnostic_prezumtiv.delete(0, tkinter.END)
-            self.entry_diagnostic_prezumtiv.insert(0, values[5])
+            self.entry_diagnostic_prezumtiv.insert(0, values[6])
             
-            self.entry_medic_curant.set(values[6])
-            self.entry_sectie.set(values[7])
+            self.entry_medic_curant.set(values[7])
+            self.entry_sectie.set(values[8])
 
             self.prezentare_pacient(self.id_pacient)
 

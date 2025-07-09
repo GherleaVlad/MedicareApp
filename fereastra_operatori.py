@@ -194,3 +194,4 @@ class FereastraOperatori(tkinter.Toplevel):
             self.entry_prenume.insert(0, values[4])
 
             self.entry_sectie.set(values[5])
+

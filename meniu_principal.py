@@ -7,7 +7,7 @@ from fereastra_rapoarte import FereastraRapoarte
 from fereastra_operatori import FereastraOperatori
 from fereastra_sectii import FereastraSectii
 from fereastra_nomenclator import Fereastra_nomenclator
-
+from fereastra_vizualizare_pacienti import FereastraVizualizarePacienti
 '''
 Modulul meniu_principal contine clasa MeniuPrincipal a aplicatiei si care reprezinta meniul de baza din care utilizatorul isi selecteaza operatiunile dorite in program.
 Fereastra care contine meniul principal se deschide sub doua forme, in functie de drepturile utilizatorului care se autentifica in aplicatie.
@@ -49,7 +49,7 @@ class MeniuPrincipal(tkinter.Tk):
         frame_pacienti = tkinter.LabelFrame(self,text='Pacienti',font=("Arial", 10, "bold"))
         frame_pacienti.grid(row=1,column=0,padx=(20,0),pady=5)
         tkinter.Button(frame_pacienti,text='OPERATIUNI PACIENTI', command=lambda: FereastraPacient(self),width=25,height=3).pack(padx=20,pady=12)
-        tkinter.Button(frame_pacienti,text='VIZUALIZARE INTERNARI',width=25,height=3).pack(padx=20,pady=12)
+        tkinter.Button(frame_pacienti,text='VIZUALIZARE PACIENTI',command=lambda: FereastraVizualizarePacienti(self),width=25,height=3).pack(padx=20,pady=12)
         tkinter.Button(frame_pacienti,text='RAPOARTE', command=lambda: FereastraRapoarte(self),width=25,height=3).pack(padx=20,pady=12)
 
         tkinter.Label(self).grid(row=1,column=1,padx=125,pady=5)
@@ -75,5 +75,5 @@ class MeniuPrincipal(tkinter.Tk):
         frame_pacienti = tkinter.LabelFrame(self,text='Pacienti',font=("Arial", 10, "bold"))
         frame_pacienti.grid(row=1,column=1,padx=(10,10),pady=5)
         tkinter.Button(frame_pacienti,text='OPERATIUNI PACIENTI', command=lambda: FereastraPacient(self),width=25,height=3).pack(padx=20,pady=12)
-        tkinter.Button(frame_pacienti,text='VIZUALIZARE INTERNARI',width=25,height=3).pack(padx=20,pady=12)
+        tkinter.Button(frame_pacienti,text='VIZUALIZARE PACIENTI', command=FereastraVizualizarePacienti(self),width=25,height=3).pack(padx=20,pady=12)
         tkinter.Button(frame_pacienti,text='RAPOARTE', command=lambda: FereastraRapoarte(self),width=25,height=3).pack(padx=20,pady=12)
