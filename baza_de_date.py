@@ -498,7 +498,34 @@ def get_pacienti_vizualizare():
                     ''')
         return cursor.fetchall()
 
-def cautare_pacient():
-    pass
-
+def get_pacient_rapoarte():
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT
+                        IdPacient,
+                        nume,
+                        prenume,
+                        CNP,
+                        data_nastere,
+                        varsta,
+                        CASE
+                            WHEN sex = 'F' THEN 'Feminin'
+                            WHEN sex = 'M' THEN 'Masculin'
+                            ELSE 'none'
+                            END AS sex,
+                        CASE
+                            WHEN asigurat = '1' THEN 'Asigurat'
+                            WHEN asigurat = '0' THEN 'Neasigurat'
+                            ELSE 'none'
+                            END AS asigurat,
+                        IFNULL(data_internare, '') AS data_internare,
+                        IFNULL(medic_curant, '') AS medic_curant,
+                        IFNULL(diagnostic_prezumtiv, '') AS diagnostic_prezumtiv,
+                        IFNULL(sectie, '') AS sectie,
+                        IFNULL(zile_spitalizare, '') AS zile_spitalizare,
+                        IFNULL(data_externarii, '') AS data_externarii,
+                        IFNULL(diagnostic_confirmat, '') AS diagnostic_confirmat
+                        FROM Pacienti
+                    ''')
+        return cursor.fetchall()
 
