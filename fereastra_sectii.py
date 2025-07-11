@@ -62,7 +62,7 @@ class FereastraSectii(tkinter.Toplevel):
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_sectie(self):
-        sectie = self.entry_sectie.get().strip()
+        sectie = self.entry_sectie.get().upper().strip()
         sef_sectie = self.entry_sef_sectie.get()
         
         date_existente = verificare_sectie(sectie)
@@ -84,7 +84,7 @@ class FereastraSectii(tkinter.Toplevel):
         self.refresh_sectii()
 
     def modificare_sectie(self):
-        sectie = self.entry_sectie.get().strip()
+        sectie = self.entry_sectie.get().upper().strip()
         sef_sectie = self.entry_sef_sectie.get()
         
         if sectie and sef_sectie:

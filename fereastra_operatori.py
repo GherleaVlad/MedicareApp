@@ -62,7 +62,7 @@ class FereastraOperatori(tkinter.Toplevel):
 
         tkinter.Button(frame_date,text='SALVARE', command=lambda: self.adaugare_operator(),width=21).grid(column=0,row=5,padx=5,pady=3)
         tkinter.Button(frame_date,text='MODIFICARE', command = lambda: self.modificare_operator() ,width=21).grid(column=1,row=5,padx=3,pady=5)
-        tkinter.Button(frame_date,text='STERGERE',width=21).grid(column=0,row=6,padx=3,pady=5)
+        tkinter.Button(frame_date,text='SCHIMBARE PAROLA',width=21).grid(column=0,row=6,padx=3,pady=5)
         tkinter.Button(frame_date,text='INACTIVARE', command= lambda: self.dezactivare_operator() ,width=21).grid(column=1,row=6,padx=3,pady=5)
 
         self.refresh_operatori()
