@@ -1,7 +1,7 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_medic_curant, get_medici_curanti, verificare_existenta_medic_curant, update_medic_curant, insert_medic_trimitator, get_medici_trimitatori, verificare_existenta_medic_trimitator, update_medic_trimitator, update_parafe_inexistente
+from baza_de_date import *
 from tkinter import messagebox, filedialog
 import json
 
@@ -29,12 +29,12 @@ class Fereastra_nomenclator(tkinter.Toplevel):
         self.notebook.add(self.frame_medici_curanti, text='Medici Curanti')
         self.notebook.add(self.frame_medici_trimitatori, text='Medici Trimitatori')
 
-
 class MediciCuranti(ttk.Frame):
     def __init__(self, parinte):
         super().__init__(parinte)
         self.frame_date_medic = tkinter.Frame(self)
         self.frame_date_medic.grid(column=0, row=0,padx=(0,10),pady=(10,10))
+        self.id_medic = None
 
         tkinter.Label(self.frame_date_medic,text='Nume: ').grid(column=0,row=0,pady=5)
         tkinter.Label(self.frame_date_medic,text='Prenume: ').grid(column=0,row=1,pady=5)
@@ -61,7 +61,7 @@ class MediciCuranti(ttk.Frame):
 
         tkinter.Button(self.frame_butoane,text='Adaugare',command=lambda: self.adaugare_medic(),width=25).grid(column=0,row=1,pady=5)
         tkinter.Button(self.frame_butoane,text='Modificare', command=lambda: self.modificare_medic(),width=25).grid(column=0,row=2,pady=5)
-        tkinter.Button(self.frame_butoane,text='Stergere',width=25).grid(column=0,row=3,pady=5)
+        tkinter.Button(self.frame_butoane,text='Stergere', command=lambda: self.stergere_medic(),width=25).grid(column=0,row=3,pady=5)
 
 
         coloane = ('IdMedic','Nume','Prenume','Parafa','Activ')
@@ -86,9 +86,9 @@ class MediciCuranti(ttk.Frame):
             self.tabel_medici_curanti.insert("", tkinter.END , values=rows)
 
     def adaugare_medic(self):
-        nume = self.entry_nume.get()
-        prenume = self.entry_prenume.get()
-        parafa = self.entry_parafa.get().capitalize()
+        nume = self.entry_nume.get().upper()
+        prenume = self.entry_prenume.get().upper()
+        parafa = self.entry_parafa.get().upper()
         activ = self.activ_var.get()
 
         date_existente = verificare_existenta_medic_curant(parafa)
@@ -114,9 +114,9 @@ class MediciCuranti(ttk.Frame):
         self.refresh_medici()
 
     def modificare_medic(self):
-        nume = self.entry_nume.get()
-        prenume = self.entry_prenume.get()
-        parafa = self.entry_parafa.get().capitalize()
+        nume = self.entry_nume.get().upper()
+        prenume = self.entry_prenume.get().upper()
+        parafa = self.entry_parafa.get().upper()
         activ = self.activ_var.get()
 
         if nume and prenume and parafa:
@@ -141,6 +141,36 @@ class MediciCuranti(ttk.Frame):
 
             messagebox.showerror('EROARE', 'Selectati o inregistrare din lista! ', parent = self)
         
+        self.entry_nume.delete(0, tkinter.END)
+        self.entry_prenume.delete(0, tkinter.END)
+        self.entry_parafa.delete(0, tkinter.END)
+        self.activ_var.set(int('0'))
+        self.refresh_medici()
+
+    def stergere_medic(self):
+        idmedic = self.id_medic
+        nume = self.entry_nume.get().upper()
+        prenume = self.entry_prenume.get().upper()
+        parafa = self.entry_parafa.get().upper()
+
+        string_medic = f'{nume}  {prenume} - {parafa}'
+
+        if idmedic:
+            if verificare_existenta_inregistrari(string_medic) is None:
+                
+                intrebare = messagebox.askyesno('CONFIRMARE STERGERE','Confirmati stergerea medicului selectat?', parent = self)
+                
+                if intrebare:
+                    stergere_medic_curant(idmedic)
+                    messagebox.showinfo('INFO','Medic sters cu succes!', parent = self)
+                else:
+                    messagebox.showwarning('INFO','Operatiune anulata', parent = self)            
+            else:
+                messagebox.showerror('EROARE','Stergerea medicului curant nu este posibila deoarece exista inregistrari asociate acestuia.', parent = self)
+        else:
+            messagebox.showerror('EROARE','Selectati un medic din lista', parent = self)
+
+
         self.entry_nume.delete(0, tkinter.END)
         self.entry_prenume.delete(0, tkinter.END)
         self.entry_parafa.delete(0, tkinter.END)

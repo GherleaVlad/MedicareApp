@@ -194,6 +194,18 @@ def verificare_existenta_medic_curant(parafa):
         cursor.execute('''SELECT * FROM Medici_Curanti WHERE parafa = ?''',(parafa,))
         return cursor.fetchone()
     
+def verificare_existenta_inregistrari(string_medic):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT * FROM Pacienti WHERE medic_curant = ?''',(string_medic,))
+        return cursor.fetchone()
+    
+def stergere_medic_curant(idmedic):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''DELETE FROM Medici_Curanti WHERE IdMedicCurant = ? ''', (idmedic,))
+        conexiune.commit()
+
 # Tabela Medici_Trimitatori
 
 def insert_medic_trimitator(nume, prenume, parafa):
@@ -273,6 +285,19 @@ def get_operatori():
         cursor = conexiune.cursor()
         cursor.execute('''SELECT * FROM Operatori''')
         return cursor.fetchall()
+
+def verificare_parola_corecta(idoperator, parola_veche):
+    ''' Functia utilizata pentru verificarea datelor de conectare in aplicatie '''
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('SELECT * FROM Operatori WHERE IdOperator = ? AND parola = ?',(idoperator, parola_veche))
+        return cursor.fetchone()
+    
+def functie_schimbare_parola(parola_noua,idoperator):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''UPDATE Operatori SET parola = ? WHERE IdOperator = ? ''', (parola_noua, idoperator))
+        conexiune.commit()    
 
 # Functia folosita pentru adaugarea pacientilor in baza de date, adaugarea internarilor si externarilor
 
@@ -585,6 +610,17 @@ def get_pacient_fisa_externare(idpacient):
                         IFNULL(recomandari, '') AS recomandari,
                         IFNULL(plan_tratament, '') AS data_externarii
                         FROM Pacienti  
+                        WHERE IdPacient = ? AND data_externarii IS NOT NULL
+                    ''', (idpacient,))
+        return cursor.fetchone()
+
+def get_pacient_decont(idpacient):
+    with conectare_baza_date() as conexiune:
+        cursor = conexiune.cursor()
+        cursor.execute('''SELECT *
+                        FROM Pacienti p
+                        INNER JOIN pacienti_servicii ps on p.IdPacient=ps.id_pacient
+                        INNER JOIN servicii s on ps.id_serviciu=s.id
                         WHERE IdPacient = ? AND data_externarii IS NOT NULL
                     ''', (idpacient,))
         return cursor.fetchone()

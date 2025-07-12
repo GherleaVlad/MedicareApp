@@ -1,7 +1,7 @@
 import tkinter
 import utilities
 from tkinter import ttk
-from baza_de_date import insert_operator, update_operator, inactivare_operator, verificare_operator_dupa_utilizator, verificare_operator_dupa_nume_prenume, get_operatori
+from baza_de_date import *
 from tkinter import messagebox
 
 '''
@@ -62,7 +62,7 @@ class FereastraOperatori(tkinter.Toplevel):
 
         tkinter.Button(frame_date,text='SALVARE', command=lambda: self.adaugare_operator(),width=21).grid(column=0,row=5,padx=5,pady=3)
         tkinter.Button(frame_date,text='MODIFICARE', command = lambda: self.modificare_operator() ,width=21).grid(column=1,row=5,padx=3,pady=5)
-        tkinter.Button(frame_date,text='SCHIMBARE PAROLA',width=21).grid(column=0,row=6,padx=3,pady=5)
+        tkinter.Button(frame_date,text='SCHIMBARE PAROLA', command=lambda: self.schimbare_parola(),width=21).grid(column=0,row=6,padx=3,pady=5)
         tkinter.Button(frame_date,text='INACTIVARE', command= lambda: self.dezactivare_operator() ,width=21).grid(column=1,row=6,padx=3,pady=5)
 
         self.refresh_operatori()
@@ -144,54 +144,104 @@ class FereastraOperatori(tkinter.Toplevel):
 
         self.refresh_operatori()
 
-    def stergere_operator(self):
-        pass
-
     def dezactivare_operator(self):
-        
-        utilizator = self.entry_utilizator.get().strip()
-
-        if self.id_operator:
-            intrebare = messagebox.askyesno('CONFIRMARE INACTIVARE', 
-                                            f'Doriti inactivarea operatorului: {utilizator}',
-                                            parent = self)
             
-            if intrebare:
-                inactivare_operator(self.id_operator)
-                messagebox.showinfo('INFO', 'Operator inactivat!', parent = self)
+            utilizator = self.entry_utilizator.get().strip()
+
+            if self.id_operator:
+                intrebare = messagebox.askyesno('CONFIRMARE INACTIVARE', 
+                                                f'Doriti inactivarea operatorului: {utilizator}',
+                                                parent = self)
+                
+                if intrebare:
+                    inactivare_operator(self.id_operator)
+                    messagebox.showinfo('INFO', 'Operator inactivat!', parent = self)
+
+                else:
+                    messagebox.showwarning('AVERTIZARE', 'Datele nu au fost modificate', parent = self)
 
             else:
-                messagebox.showwarning('AVERTIZARE', 'Datele nu au fost modificate', parent = self)
-
-        else:
-            messagebox.showerror('EROARE', 'Selectati un operator din lista!', parent = self)
-
-        self.entry_utilizator.delete(0, tkinter.END)
-        self.entry_nume.delete(0, tkinter.END)
-        self.entry_prenume.delete(0, tkinter.END)
-        self.entry_sectie.set('')
-        self.entry_parola.delete(0, tkinter.END)
-
-        self.refresh_operatori()
-
-    def load_selected_operator(self, event):
-        selected = self.tabel_operatori.selection()
-        if selected:
-            values = self.tabel_operatori.item(selected[0])["values"]
-
-            self.id_operator = values[0]
+                messagebox.showerror('EROARE', 'Selectati un operator din lista!', parent = self)
 
             self.entry_utilizator.delete(0, tkinter.END)
-            self.entry_utilizator.insert(0, values[1])
-
-            self.entry_parola.delete(0, tkinter.END)
-            self.entry_parola.insert(0, values[2])
-
             self.entry_nume.delete(0, tkinter.END)
-            self.entry_nume.insert(0, values[3])
-
             self.entry_prenume.delete(0, tkinter.END)
-            self.entry_prenume.insert(0, values[4])
+            self.entry_sectie.set('')
+            self.entry_parola.delete(0, tkinter.END)
 
-            self.entry_sectie.set(values[5])
+            self.refresh_operatori()
 
+    def load_selected_operator(self, event):
+            selected = self.tabel_operatori.selection()
+            if selected:
+                values = self.tabel_operatori.item(selected[0])["values"]
+
+                self.id_operator = values[0]
+
+                self.entry_utilizator.delete(0, tkinter.END)
+                self.entry_utilizator.insert(0, values[1])
+
+                self.entry_parola.delete(0, tkinter.END)
+                self.entry_parola.insert(0, values[2])
+
+                self.entry_nume.delete(0, tkinter.END)
+                self.entry_nume.insert(0, values[3])
+
+                self.entry_prenume.delete(0, tkinter.END)
+                self.entry_prenume.insert(0, values[4])
+
+                self.entry_sectie.set(values[5])
+
+    def schimbare_parola(self):
+        
+        if self.id_operator:
+            fereastra_schimbare_parola = tkinter.Toplevel(self)
+            fereastra_schimbare_parola.title("Adaugare Servicii")
+            fereastra_schimbare_parola.geometry(utilities.pozitionare_fereastra_pe_ecran(self,300,250))
+            fereastra_schimbare_parola.resizable(False, False)
+
+            frame_fereastra = tkinter.Frame(fereastra_schimbare_parola)
+            frame_fereastra.pack(padx=10,pady=20)
+
+            tkinter.Label(frame_fereastra, text='Parola veche:').grid(column=0,row=0,padx=5,pady=5)
+            tkinter.Label(frame_fereastra, text='Parola noua:').grid(column=0,row=1,padx=5,pady=5)
+            tkinter.Label(frame_fereastra, text='Confirmare parola:').grid(column=0,row=2,padx=5,pady=5)
+
+            entry_parola_veche = tkinter.Entry(frame_fereastra, width=20)
+            entry_parola_noua = tkinter.Entry(frame_fereastra, width=20)
+            entry_confirmare_parola = tkinter.Entry(frame_fereastra, width=20)
+
+            entry_parola_veche.grid(column=1,row=0,padx=5,pady=5)
+            entry_parola_noua.grid(column=1,row=1,padx=5,pady=5)
+            entry_confirmare_parola.grid(column=1,row=2,padx=5,pady=5)
+            
+            tkinter.Button(fereastra_schimbare_parola,text='SCHIMBARE PAROLA', command=lambda: modificare_parola(), width=20).pack(padx=5,pady=5)
+
+            def modificare_parola():
+                
+                idoperator = self.id_operator
+
+                if verificare_parola_corecta(idoperator, entry_parola_veche.get()):
+
+                    intrebare = messagebox.askyesno('CONFIRMARE MODIFICARI','Confirmati modificarea parolei?', parent = fereastra_schimbare_parola)
+
+                    if intrebare:
+
+                        functie_schimbare_parola(entry_parola_noua.get(),idoperator)
+                        messagebox.showinfo('INFO','Parola modificata cu succes', parent = fereastra_schimbare_parola)
+                        fereastra_schimbare_parola.destroy()
+                        self.refresh_operatori()
+                    else:
+                        messagebox.showwarning('AVERTIZARE','Operatiune anulata!',parent = fereastra_schimbare_parola)
+                        fereastra_schimbare_parola.destroy()
+                        self.refresh_operatori()
+                else:
+                    messagebox.showerror('EROARE','Parola veche incorecta!', parent = fereastra_schimbare_parola)
+
+        else:
+                messagebox.showerror('EROARE','Selectati un operator din lista!', parent = self)
+
+
+
+
+    

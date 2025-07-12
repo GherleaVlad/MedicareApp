@@ -1,6 +1,6 @@
 import tkinter
 import utilities
-from baza_de_date import get_pacient_rapoarte, get_pacient_fisa_externare
+from baza_de_date import get_pacient_rapoarte, get_pacient_fisa_externare, get_pacient_decont
 from tkinter import ttk
 from tkinter import messagebox
 
@@ -39,7 +39,7 @@ class FereastraRapoarte(tkinter.Toplevel):
         self.frame_butoane.grid(column=1,row=0,padx=5,pady=5)
 
         tkinter.Button(self.frame_butoane,text='Generare fisa externare', command=lambda: self.generare_fisa_externare()).pack(pady=10)
-        tkinter.Button(self.frame_butoane,text='Generare decont pacient').pack(pady=10)
+        tkinter.Button(self.frame_butoane,text='Generare decont pacient', command=lambda: self.generare_decont_pacient()).pack(pady=10)
 
         # Frameul cu text
         self.frame_text = tkinter.Frame(self.frame_fereastra)
@@ -108,4 +108,20 @@ Externat la data de: {date_externare[16]}
                 self.text.insert(tkinter.END, fisa_externare)
 
     def generare_decont_pacient(self):
-        pass
+        
+        date_decont = get_pacient_decont(self.id_pacient)
+        
+        if self.id_pacient is None:
+            messagebox.showerror('EROARE', 'Selectati un pacient din lista!', parent = self)
+            return
+        
+        else:
+
+            if date_decont is None:
+                messagebox.showerror('EROARE', 'Nu exista date de externare pentru acest pacient!', parent = self)
+                return
+
+            fisa_decont = f'test'
+
+            self.text.delete(1.0, tkinter.END)
+            self.text.insert(tkinter.END, fisa_decont)

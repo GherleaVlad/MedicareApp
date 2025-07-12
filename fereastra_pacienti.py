@@ -401,9 +401,13 @@ class Internare(ttk.Frame):
             
             if not verificare_existent_externare(idpacient):
 
-                update_pacienti_internare(data_internare, medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
-                messagebox.showinfo('INFO','Internare modificata cu succes!', parent = self)
+                intrebare = messagebox.askyesno('CONFIRMARE MODIFICARI','Confirmati modificarea datelor de internare a pacientului selectat?', parent = self)
 
+                if intrebare:
+                    update_pacienti_internare(data_internare, medic_trimitator, bilet_trimitere, diagnostic_prezumtiv, medic_curant, sectie, idpacient)
+                    messagebox.showinfo('INFO','Internare modificata cu succes!', parent = self)
+                else:
+                    messagebox.showwarning('AVERTIZARE','Operatiune anulata', parent = self)
             else:
 
                 messagebox.showerror('EROARE','Pacientul selectat a fost externat! Datele nu pot fi modificate', parent = self)
@@ -663,7 +667,7 @@ class Externare(ttk.Frame):
             # Creeaza o noua fereastra pentru adaugarea serviciilor
             fereastra_servicii = tkinter.Toplevel(self)
             fereastra_servicii.title("Adaugare Servicii")
-            fereastra_servicii.geometry("600x650")
+            fereastra_servicii.geometry(utilities.pozitionare_fereastra_pe_ecran(self,600,650))
             fereastra_servicii.resizable(False, False)
 
             frame_fereastra = tkinter.Frame(fereastra_servicii)
