@@ -4,6 +4,7 @@ from tkinter import ttk
 from baza_de_date import get_pacienti_vizualizare
 from tkinter import filedialog, messagebox
 import csv
+import json
 
 '''
 Modulul fereastra_vizualizare_pacienti este folosita pentru vizualizarea, tiparirea si exportul internarilor.
@@ -17,6 +18,7 @@ class FereastraVizualizarePacienti(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,1400,550)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei       
         
         # frame pentru criteriile de filtrare si butoanele de filtrare
         self.criterii_filtrare = tkinter.Frame(self)
@@ -168,5 +170,22 @@ class FereastraVizualizarePacienti(tkinter.Toplevel):
                 messagebox.showerror("EROARE", f"A aparut o eroare la exportul fisierului:\n{e}", parent=self)
 
     def export_json(self):
-        pass
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[('Fișier JSON', '*.json')],
+            title="Alegeti locatia de salvare a fisierului",
+            parent=self)
+        
+        if not file_path:
+            messagebox.showerror('EROARE', 'Nu ati selectat o cale de salvare a fisierului! Operatiune anulata!', parent = self)
+        else:
+            coloane = self.tabel_date["columns"]
+            randuri = [self.tabel_date.item(IdInregistrare)["values"] for IdInregistrare in self.tabel_date.get_children()]
+
+            try:
+                with open(file_path, mode="w", newline='') as fisier:
+                    json.dump(randuri, fisier, indent=4)
+                messagebox.showinfo("INFO", f"Date exportate cu succes:\n{file_path}", parent=self)
+            except Exception as e:
+                messagebox.showerror("EROARE", f"A aparut o eroare la exportul fisierului:\n{e}", parent=self)
 

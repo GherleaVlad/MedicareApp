@@ -17,7 +17,8 @@ class FereastraPacient(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,960,500)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
         style.configure('TNotebook.Tab', padding=[5, 3], font=('TkDefaultFont', 8))

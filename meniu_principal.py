@@ -26,6 +26,7 @@ class MeniuPrincipal(tkinter.Tk):
         self.withdraw()
         self.utilizator_autentificat = None
         self.autentificare = FereastraAutentificare(self)
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
 
     def deschide_meniu_principal_admin(self):
         self.deiconify()  # Afiseaza fereastra principala (cu meniul) dupa ce utilizatorul se autentifica cu succes

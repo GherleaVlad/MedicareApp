@@ -15,7 +15,8 @@ class FereastraAutentificare(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
        # self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,350,180)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        
         # Label si Entry pentru autentificare utilizator + pozitionare
         tkinter.Label(self, text="Utilizator:").pack(pady=(10, 0))
         self.entry_utilizator = tkinter.Entry(self)

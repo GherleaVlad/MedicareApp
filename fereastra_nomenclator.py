@@ -12,6 +12,7 @@ class Fereastra_nomenclator(tkinter.Toplevel):
         self.resizable(False, False) # Imposibilitate de redimensionare fereastra
         self.update_idletasks() # Asteapta initializarea completa a ferestrei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,725,450)) # Setam geometria si centrarea pe ecran
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
         
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()

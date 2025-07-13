@@ -2,7 +2,7 @@ import tkinter
 import utilities
 from baza_de_date import get_pacient_rapoarte, get_pacient_fisa_externare, get_pacient_decont
 from tkinter import ttk
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 
 '''
 Modulul fereastra_rapoarte este folosita pentru vizualizarea, tiparirea si exportul rapoartelor.
@@ -15,7 +15,8 @@ class FereastraRapoarte(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,800,600)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-
+        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        
         self.id_pacient = None
 
         # frame-ul ferestrei folosit pentru centrare
@@ -49,7 +50,7 @@ class FereastraRapoarte(tkinter.Toplevel):
         self.text.pack(pady=5)
 
         # Butonul de salvare
-        tkinter.Button(self, text='Salvare', width=20).pack(padx=5,pady=5)
+        tkinter.Button(self, text='Salvare', command=lambda: self.salvare_text(),width=20).pack(padx=5,pady=5)
 
     def unpack_pacienti(self):
         pacienti = get_pacient_rapoarte()
@@ -125,3 +126,24 @@ Externat la data de: {date_externare[16]}
 
             self.text.delete(1.0, tkinter.END)
             self.text.insert(tkinter.END, fisa_decont)
+
+    def salvare_text(self):
+        continut = self.text.get("1.0", tkinter.END).strip()
+        if not continut:
+            messagebox.showwarning("ATENTIE", "Nu exista continut de salvat!", parent=self)
+            return
+        
+        fisier = filedialog.asksaveasfilename(
+            parent=self,
+            title="Salveaza raportul",
+            defaultextension=".txt",
+            filetypes=[("Fisier text", "*.txt")]
+            )
+        
+        if fisier:
+            try:
+                with open(fisier, "w", encoding="utf-8") as f:
+                    f.write(continut)
+                messagebox.showinfo("INFO", "Raportul a fost salvat!", parent=self)
+            except Exception as e:
+                messagebox.showerror("EROARE", f"Eroare la salvare: {e}", parent=self)

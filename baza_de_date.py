@@ -623,4 +623,4 @@ def get_pacient_decont(idpacient):
                         INNER JOIN servicii s on ps.id_serviciu=s.id
                         WHERE IdPacient = ? AND data_externarii IS NOT NULL
                     ''', (idpacient,))
-        return cursor.fetchone()
+        return cursor.fetchall()
