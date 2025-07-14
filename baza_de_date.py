@@ -239,7 +239,6 @@ def update_parafe_inexistente(parafa):
         cursor.execute('''UPDATE Medici_Trimitatori SET activ = ? WHERE parafa = ? ''', ('0', parafa))
         conexiune.commit()
 
-
 # Tabela Operatori
 
 def cautare_operator(utilizator, parola): 
@@ -397,7 +396,7 @@ def stergere_internare(idpacient):
         cursor = conexiune.cursor()
         cursor.execute('''UPDATE Pacienti 
                        SET data_internare = ?, medic_trimitator = ? , bilet_trimitere = ?, diagnostic_prezumtiv = ?, medic_curant = ?, sectie = ? 
-                       WHERE IdPacient = ?  AND data_externarii IS NULL ''',('','', '', '', '', '', idpacient))
+                       WHERE IdPacient = ? ''',('','', '', '', '', '', idpacient))
         conexiune.commit()
 
 # Externare
@@ -617,10 +616,21 @@ def get_pacient_fisa_externare(idpacient):
 def get_pacient_decont(idpacient):
     with conectare_baza_date() as conexiune:
         cursor = conexiune.cursor()
-        cursor.execute('''SELECT *
+        cursor.execute('''SELECT
+                        IdPacient, 
+                        nume, 
+                        prenume, 
+                        CNP, 
+                        data_nastere, 
+                        varsta,
+                        zile_spitalizare,
+                        CASE WHEN alocatie_hrana = 'Hrana basic - 25 lei' then 25
+                        WHEN alocatie_hrana = 'Hrana premium - 30 lei' then 30
+                        WHEN alocatie_hrana = 'Hrana gold - 50 lei' then 50 END AS alocatie_hrana,
+                        denumire_serviciu,
+                        Valoare
                         FROM Pacienti p
                         INNER JOIN pacienti_servicii ps on p.IdPacient=ps.id_pacient
                         INNER JOIN servicii s on ps.id_serviciu=s.id
-                        WHERE IdPacient = ? AND data_externarii IS NOT NULL
-                    ''', (idpacient,))
+                        WHERE IdPacient = ? AND data_externarii IS NOT NULL ''', (idpacient,))
         return cursor.fetchall()

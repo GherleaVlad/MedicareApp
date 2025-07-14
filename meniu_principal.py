@@ -44,10 +44,12 @@ class MeniuPrincipal(tkinter.Tk):
 
         tkinter.Label(frame_date,text=f'Data: {utilities.data_curenta()}',font=("Arial", 10, "bold")).pack()
 
-        nume_prenume_utilizator = 'test' # f"{self.utilizator_autentificat[3]} {self.utilizator_autentificat[4]}"
-        tkinter.Label(frame_date,text=f'Operator: {nume_prenume_utilizator}',font=("Arial", 10, "bold")).pack()
+        # nume_prenume_utilizator = 'test' 
+        # tkinter.Label(frame_date,text=f'Operator: {nume_prenume_utilizator}',font=("Arial", 10, "bold")).pack()
 
-        frame_pacienti = tkinter.LabelFrame(self,text='Pacienti',font=("Arial", 10, "bold"))
+        tkinter.Label(frame_date,text=f'Operator: {f"{self.utilizator_autentificat[3]} {self.utilizator_autentificat[4]}"}',font=("Arial", 10, "bold")).pack()
+        
+        frame_pacienti = tkinter.LabelFrame(self,text='Operatiuni Pacienti',font=("Arial", 10, "bold"))
         frame_pacienti.grid(row=1,column=0,padx=(20,0),pady=5)
         tkinter.Button(frame_pacienti,text='OPERATIUNI PACIENTI', command=lambda: FereastraPacient(self),width=25,height=3).pack(padx=20,pady=12)
         tkinter.Button(frame_pacienti,text='VIZUALIZARE PACIENTI',command=lambda: FereastraVizualizarePacienti(self),width=25,height=3).pack(padx=20,pady=12)
@@ -65,16 +67,20 @@ class MeniuPrincipal(tkinter.Tk):
         self.deiconify()  # Afiseaza fereastra principala (cu meniul) dupa ce utilizatorul se autentifica cu succes
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,800,600))
 
-        # Frame-ul care contine sigla si numele aplicatiei + pozitionare    
-        tkinter.Label(self).grid(row=0,column=0,padx=(130,130),pady=5)
-        
-        frame_sigla = tkinter.Frame(self)
-        frame_sigla.grid(row=0,column=1,padx=(10,10),pady=(0,20))
+        self.frame_fereastra = tkinter.Frame(self)
+        self.frame_fereastra.pack()
+
+        frame_sigla = tkinter.Frame(self.frame_fereastra)
+        frame_sigla.grid(column=0, row=0, pady=10)
+
         tkinter.Label(frame_sigla, text='+', font=("Arial", 120, "bold"), fg='red').pack(pady=2)
         tkinter.Label(frame_sigla, text='MEDICARE APP', font=("Arial", 15, "bold"), fg='red').pack(pady=2)
 
-        frame_pacienti = tkinter.LabelFrame(self,text='Pacienti',font=("Arial", 10, "bold"))
-        frame_pacienti.grid(row=1,column=1,padx=(10,10),pady=5)
-        tkinter.Button(frame_pacienti,text='OPERATIUNI PACIENTI', command=lambda: FereastraPacient(self),width=25,height=3).pack(padx=20,pady=12)
-        tkinter.Button(frame_pacienti,text='VIZUALIZARE PACIENTI', command=FereastraVizualizarePacienti(self),width=25,height=3).pack(padx=20,pady=12)
-        tkinter.Button(frame_pacienti,text='RAPOARTE', command=lambda: FereastraRapoarte(self),width=25,height=3).pack(padx=20,pady=12)
+        frame_butoane = tkinter.LabelFrame(self.frame_fereastra, text='Operatiuni Pacienti', font=("Arial", 10, "bold"))
+        frame_butoane.grid(column=0, row=1, pady=10)
+
+        tkinter.Button(frame_butoane,text='OPERATIUNI PACIENTI', command=lambda: FereastraPacient(self),width=25,height=3).pack(padx=15, pady=15)
+        tkinter.Button(frame_butoane,text='VIZUALIZARE PACIENTI', command=lambda: FereastraVizualizarePacienti(self),width=25,height=3).pack(padx=15, pady=15)
+        tkinter.Button(frame_butoane,text='RAPOARTE', command=lambda: FereastraRapoarte(self),width=25,height=3).pack(padx=15, pady=15)
+
+        tkinter.Label(self,text=f'Operator: {f"{self.utilizator_autentificat[3]} {self.utilizator_autentificat[4]}"}',font=("Arial", 10, "bold")).pack(pady=10)

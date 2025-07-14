@@ -111,7 +111,27 @@ Externat la data de: {date_externare[16]}
     def generare_decont_pacient(self):
         
         date_decont = get_pacient_decont(self.id_pacient)
+
+        zile_spitalizare = int(date_decont[1][6])
+        alocatie_hrana = date_decont[1][7]
+
+
+        alocatie_hrana_total = alocatie_hrana * zile_spitalizare
+
+        lista_servicii = list()
         
+
+        valoare_totala_servicii = 0
+
+        for servicii in date_decont:
+            lista_servicii.append(f'{servicii[8]} - {servicii[9]}')
+            valoare_totala_servicii += float(servicii[9])
+
+        valoare_totala_decont = alocatie_hrana_total+valoare_totala_servicii
+
+        lista_servicii_de_afisat = '\n'.join(lista_servicii)
+
+
         if self.id_pacient is None:
             messagebox.showerror('EROARE', 'Selectati un pacient din lista!', parent = self)
             return
@@ -122,7 +142,25 @@ Externat la data de: {date_externare[16]}
                 messagebox.showerror('EROARE', 'Nu exista date de externare pentru acest pacient!', parent = self)
                 return
 
-            fisa_decont = f'test'
+            fisa_decont = f'''
+            Decont pacient
+
+Pacientului {date_decont[1][1]} {date_decont[1][2]}, detinator al codului numeric personal
+{date_decont[1][3]}, nascut la data {date_decont[1][4]}, in varsta de {date_decont[1][5]} ani,
+a fost spitalizat pe o durata de {zile_spitalizare} zile.
+
+Alocatia de hrana atribuita pacientului a fost in valoare de {alocatie_hrana} lei/zi.
+
+Costul total al hranei pe perioada spitalizarii este de: {alocatie_hrana_total} lei.
+
+Serviciile efectuate pacientului sunt: 
+{lista_servicii_de_afisat}
+
+Costul total cu serviciile efectuate pacientului sunt in valoare de: {valoare_totala_servicii} lei.
+
+Valoarea totala a decontului: {valoare_totala_decont} lei.
+
+            '''
 
             self.text.delete(1.0, tkinter.END)
             self.text.insert(tkinter.END, fisa_decont)
@@ -147,3 +185,4 @@ Externat la data de: {date_externare[16]}
                 messagebox.showinfo("INFO", "Raportul a fost salvat!", parent=self)
             except Exception as e:
                 messagebox.showerror("EROARE", f"Eroare la salvare: {e}", parent=self)
+

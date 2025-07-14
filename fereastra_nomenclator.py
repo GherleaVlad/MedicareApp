@@ -345,8 +345,9 @@ class MediciTrimitatori(ttk.Frame):
 
                 parafe_json = [parafa.get('parafa') for parafa in data]
 
-                # for medic_existent in parafe_nomenclator:
-                #     if medic_existent not in parafe_json:
+                for parafe_medici_existenti in parafe_nomenclator:
+                    if parafe_medici_existenti not in parafe_json:
+                        update_parafe_inexistente(parafe_medici_existenti)
                         
 
 
