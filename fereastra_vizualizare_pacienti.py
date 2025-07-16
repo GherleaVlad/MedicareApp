@@ -18,7 +18,7 @@ class FereastraVizualizarePacienti(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,1400,550)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei       
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
         
         # frame pentru criteriile de filtrare si butoanele de filtrare
         self.criterii_filtrare = tkinter.Frame(self)
@@ -84,6 +84,13 @@ class FereastraVizualizarePacienti(tkinter.Toplevel):
             self.tabel_date.insert("", tkinter.END, values=rows)
 
     def setare_stare_combobox(self,*args):
+            """
+            Actualizează starea combobox-urilor 'sectie' și 'medic' în funcție de opțiunile selectate curent.
+            Dacă variabila de opțiune corespunzătoare (`optiune_sectie` sau `optiune_medic`) este setată (adevărată),
+            combobox-ul respectiv este activat și setat în starea 'readonly', permițând selecția.
+            Dacă opțiunea nu este setată (falsă), combobox-ul este golit și dezactivat.
+            """
+         
             if self.optiune_sectie.get():
                 self.combobox_sectie.config(state='readonly')
             else:
@@ -170,6 +177,7 @@ class FereastraVizualizarePacienti(tkinter.Toplevel):
                 messagebox.showerror("EROARE", f"A aparut o eroare la exportul fisierului:\n{e}", parent=self)
 
     def export_json(self):
+        """Functia export_json exporta pacientii afisati in treeview intr-un fisier JSON, la o locatie aleasa de utilizator."""
         file_path = filedialog.asksaveasfilename(
             defaultextension=".json",
             filetypes=[('Fișier JSON', '*.json')],

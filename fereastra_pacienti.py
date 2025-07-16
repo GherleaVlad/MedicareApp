@@ -17,7 +17,7 @@ class FereastraPacient(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,960,500)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
         
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
@@ -114,10 +114,15 @@ class DatePacient(ttk.Frame):
         self._refresh_internare = callback
 
     def externare_refresh(self, callback):
-        """Set function used to refresh internare tab."""
+        """Set function used to refresh externare tab."""
         self._refresh_externare = callback
 
     def refresh_pacienti(self):
+        """
+        Reîncarcă tabelul cu pacienți din baza de date.
+        Șterge toate rândurile existente și inserează datele actualizate.
+        Apelează funcțiile de refresh pentru tab-urile de internare și externare dacă sunt setate.
+        """
         
         for rows in self.tabel_pacient.get_children():
             self.tabel_pacient.delete(rows)
@@ -132,6 +137,14 @@ class DatePacient(ttk.Frame):
             self._refresh_externare()
 
     def adaugare_pacient(self):
+        """
+        Adaugă un pacient nou în baza de date pe baza datelor introduse în câmpurile formularului.
+        Verifică dacă toate câmpurile obligatorii sunt completate și dacă pacientul cu CNP-ul respectiv nu există deja.
+        Dacă datele sunt valide și pacientul nu există, îl adaugă în baza de date și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de eroare corespunzător.
+        La final, resetează câmpurile formularului și actualizează lista pacienților.
+        """
+
         nume = self.entry_nume.get().title().strip()
         prenume = self.entry_prenume.get().title().strip()
         cnp = self.entry_cnp.get().strip()
@@ -190,6 +203,14 @@ class DatePacient(ttk.Frame):
         self.refresh_pacienti()
 
     def modificare_pacient(self):
+        """
+        Modifică datele pacientului selectat din tabel.
+        Verifică dacă toate câmpurile sunt completate și dacă pacientul nu este internat.
+        Dacă utilizatorul confirmă modificarea, actualizează datele pacientului și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de avertizare sau eroare.
+        La final, resetează câmpurile formularului și actualizează lista pacienților.
+        """        
+        
         idpacient = self.id_pacient
         nume = self.entry_nume.get().title().strip()
         prenume = self.entry_prenume.get().title().strip()
@@ -238,6 +259,14 @@ class DatePacient(ttk.Frame):
         self.refresh_pacienti()
 
     def stergere_pacient(self):
+        """
+        Șterge pacientul selectat din tabel și din baza de date.
+        Verifică dacă pacientul nu este internat înainte de ștergere.
+        Dacă nu este internat, cere confirmarea utilizatorului și șterge pacientul.
+        Afișează mesaje informative sau de eroare după caz.
+        La final, resetează câmpurile formularului și actualizează lista pacienților.
+        """        
+        
         idpacient = self.id_pacient
 
         if not verificare_existent_internare(idpacient):
@@ -263,6 +292,11 @@ class DatePacient(ttk.Frame):
         self.refresh_pacienti()
 
     def load_selected_pacient(self, event):
+        """
+        Încarcă datele pacientului selectat din tabel în câmpurile formularului pentru editare.
+        Setează id-ul pacientului pentru operațiuni ulterioare (modificare/ștergere).
+        """        
+        
         selected =  self.tabel_pacient.selection()
         if selected:
             values = self.tabel_pacient.item(selected[0])["values"]
@@ -355,7 +389,11 @@ class Internare(ttk.Frame):
         self.refresh_pacienti()
 
     def refresh_pacienti(self):
-        
+        """
+        Reîncarcă tabelul cu pacienți internați din baza de date.
+        Șterge toate rândurile existente și inserează datele actualizate.
+        """
+
         for rows in self.tabel_pacient.get_children():
             self.tabel_pacient.delete(rows)
 
@@ -363,6 +401,13 @@ class Internare(ttk.Frame):
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_internare(self):
+        """
+        Adaugă o internare nouă pentru pacientul selectat.
+        Preia datele din câmpurile formularului și le validează.
+        Dacă datele sunt valide, actualizează baza de date și afișează un mesaj de succes.
+        La final, resetează câmpurile formularului și actualizează lista internărilor.
+        """        
+        
         idpacient = self.id_pacient
         data_internare = self.entry_data_internare.get().strip()
         medic_trimitator = self.entry_medic_trimitator.get()
@@ -390,6 +435,13 @@ class Internare(ttk.Frame):
         self.refresh_pacienti()
 
     def modificare_internare(self):
+        """
+        Modifică datele de internare ale pacientului selectat.
+        Verifică dacă pacientul nu a fost externat și dacă datele sunt valide.
+        Dacă utilizatorul confirmă modificarea, actualizează datele și afișează un mesaj de succes.
+        La final, resetează câmpurile formularului și actualizează lista internărilor.
+        """        
+        
         idpacient = self.id_pacient
         data_internare = self.entry_data_internare.get().strip()
         medic_trimitator = self.entry_medic_trimitator.get()
@@ -426,6 +478,13 @@ class Internare(ttk.Frame):
         self.refresh_pacienti()
 
     def stergere_internare(self):
+        """
+        Șterge internarea pacientului selectat.
+        Verifică dacă pacientul nu a fost externat înainte de ștergere.
+        Dacă nu a fost externat, cere confirmarea utilizatorului și șterge internarea.
+        La final, resetează câmpurile formularului și actualizează lista internărilor.
+        """        
+        
         idpacient = self.id_pacient
 
         if idpacient:
@@ -457,10 +516,20 @@ class Internare(ttk.Frame):
         self.refresh_pacienti()
 
     def prezentare_pacient(self, idpacient):
+        """
+        Afișează datele pacientului selectat într-un label de prezentare.
+        Preia datele din baza de date și le afișează într-un format sumarizat.
+        """        
         pacient_selectat = get_pacient_pentru_prezentare(idpacient)
         self.label_prezentare.config(text=f'PACIENTUL\nNume: {pacient_selectat[0]}\nPrenume: {pacient_selectat[1]}\nCNP: {pacient_selectat[2]}\nData nastere: {pacient_selectat[3]}\nVarsta:{pacient_selectat[4]}\nSex: {pacient_selectat[5]}\nStatus: {pacient_selectat[6]}')
        
     def load_selected_pacient(self, event):
+        """
+        Încarcă datele de internare ale pacientului selectat din tabel în câmpurile formularului pentru editare.
+        Setează id-ul pacientului pentru operațiuni ulterioare (modificare/ștergere).
+        Actualizează și prezentarea sumarizată a pacientului.
+        """        
+        
         selected =  self.tabel_pacient.selection()
         if selected:
             values = self.tabel_pacient.item(selected[0])["values"]
@@ -542,6 +611,11 @@ class Externare(ttk.Frame):
         self.refresh_pacienti()
 
     def refresh_pacienti(self):
+        """
+        Reîncarcă tabelul cu pacienți externați din baza de date.
+        Șterge toate rândurile existente și inserează datele actualizate.
+        """       
+       
         for rows in self.tabel_pacient.get_children():
             self.tabel_pacient.delete(rows)
 
@@ -549,6 +623,13 @@ class Externare(ttk.Frame):
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_externare(self):
+        """
+        Adaugă o externare nouă pentru pacientul selectat.
+        Preia datele din câmpurile formularului și le validează.
+        Dacă datele sunt valide, actualizează baza de date și afișează un mesaj de succes.
+        La final, resetează câmpurile formularului și actualizează lista externărilor.
+        """        
+        
         idpacient = self.id_pacient
         zile_spitalizare = self.entry_zile_spitalizare.get().strip()
         data_externarii = self.entry_data_externarii.get().strip()
@@ -575,6 +656,13 @@ class Externare(ttk.Frame):
         self.refresh_pacienti()
 
     def modificare_externare(self):
+        """
+        Modifică datele de externare ale pacientului selectat.
+        Verifică dacă datele sunt valide și cere confirmarea utilizatorului.
+        Dacă utilizatorul confirmă modificarea, actualizează datele și afișează un mesaj de succes.
+        La final, resetează câmpurile formularului și actualizează lista externărilor.
+        """        
+        
         idpacient = self.id_pacient
         zile_spitalizare = self.entry_zile_spitalizare.get().strip()
         data_externarii = self.entry_data_externarii.get().strip()
@@ -608,6 +696,11 @@ class Externare(ttk.Frame):
         self.refresh_pacienti()
 
     def stergere_externare(self):
+        """
+        Șterge externarea pacientului selectat.
+        Cere confirmarea utilizatorului înainte de ștergere.
+        La final, resetează câmpurile formularului și actualizează lista externărilor.
+        """        
         
         id_pacient = self.id_pacient
 
@@ -638,6 +731,10 @@ class Externare(ttk.Frame):
         self.refresh_pacienti()
 
     def load_selected_pacient(self, event):
+        """
+        Încarcă datele de externare ale pacientului selectat din tabel în câmpurile formularului pentru editare.
+        Setează id-ul pacientului pentru operațiuni ulterioare (modificare/ștergere).
+        """        
         selected =  self.tabel_pacient.selection()
         if selected:
             values = self.tabel_pacient.item(selected[0])["values"]
@@ -661,7 +758,11 @@ class Externare(ttk.Frame):
             self.text_plan_tratament.insert("1.0", values[8])
 
     def adaugare_servicii(self):
-        """Function to add services for the patient."""
+        """
+        Deschide o fereastră nouă pentru adăugarea serviciilor efectuate pentru pacientul selectat.
+        Permite selectarea și adăugarea serviciilor, precum și vizualizarea și ștergerea serviciilor deja adăugate.
+        """        
+
         if not self.id_pacient:
             messagebox.showerror('EROARE', 'Selectati un pacient din lista!', parent=self)
         else:

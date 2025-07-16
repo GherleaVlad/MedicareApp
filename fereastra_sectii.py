@@ -16,7 +16,7 @@ class FereastraSectii(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
         self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,900,350)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
 
         self.frame_tabel = tkinter.Frame(self)
         self.frame_tabel.grid(column=1,row=0,padx=(20,20),pady=(20,20))
@@ -62,6 +62,8 @@ class FereastraSectii(tkinter.Toplevel):
             self.tabel_pacient.insert("", tkinter.END, values=rows)
 
     def adaugare_sectie(self):
+        """ Functie care adauga o noua sectie in baza de date """
+
         sectie = self.entry_sectie.get().upper().strip()
         sef_sectie = self.entry_sef_sectie.get()
         
@@ -84,6 +86,8 @@ class FereastraSectii(tkinter.Toplevel):
         self.refresh_sectii()
 
     def modificare_sectie(self):
+        """ Functie care modifica o sectie existenta in baza de date """
+
         sectie = self.entry_sectie.get().upper().strip()
         sef_sectie = self.entry_sef_sectie.get()
         
@@ -114,6 +118,8 @@ class FereastraSectii(tkinter.Toplevel):
         self.refresh_sectii()
             
     def load_selected_sectie(self, event):
+        """ Functie care incarca datele sectiei selectate in Entry-uri pentru modificare """
+
         selected = self.tabel_pacient.selection()
         if selected:
             values = self.tabel_pacient.item(selected[0])["values"]

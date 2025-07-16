@@ -5,6 +5,7 @@ contexte din aplicatie
 
 from datetime import datetime
 from baza_de_date import get_medici_curanti,get_sectii,get_medici_trimitatori
+import os
 
 def pozitionare_fereastra_pe_ecran(fereastra,latime_fereastra,inaltime_fereastra):
     '''
@@ -59,3 +60,9 @@ def unpack_medici_trimitatori():
         return ''
     else:
         return [f'{medic[1]}  {medic[2]} - {medic[3]}' for medic in medici]
+    
+def get_icon_path():
+    dirpath = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(dirpath,'Logo.ico')
+    return icon_path
+

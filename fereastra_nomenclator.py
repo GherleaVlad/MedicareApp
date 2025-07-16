@@ -12,7 +12,7 @@ class Fereastra_nomenclator(tkinter.Toplevel):
         self.resizable(False, False) # Imposibilitate de redimensionare fereastra
         self.update_idletasks() # Asteapta initializarea completa a ferestrei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,725,450)) # Setam geometria si centrarea pe ecran
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
         
         # MODIFICARE STIL TAB-URI
         style = ttk.Style()
@@ -79,7 +79,7 @@ class MediciCuranti(ttk.Frame):
         self.refresh_medici()
 
     def refresh_medici(self):
-        
+        """ Functia face refresh la tabelul cu medicii curanti """
         for rows in self.tabel_medici_curanti.get_children():
             self.tabel_medici_curanti.delete(rows)
 
@@ -87,6 +87,18 @@ class MediciCuranti(ttk.Frame):
             self.tabel_medici_curanti.insert("", tkinter.END , values=rows)
 
     def adaugare_medic(self):
+        """
+        Adaugă un medic nou în baza de date pe baza datelor introduse în câmpurile formularului.
+        Funcția preia valorile din câmpurile de introducere pentru nume, prenume, parafă și starea de activitate.
+        Verifică dacă toate câmpurile obligatorii sunt completate și dacă medicul cu parafa respectivă nu există deja.
+        Dacă datele sunt valide și medicul nu există, îl adaugă în baza de date și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de eroare corespunzător.
+        La final, resetează câmpurile formularului și actualizează lista medicilor.
+        Raises:
+            messagebox.showerror: Dacă datele introduse nu sunt valide sau medicul există deja.
+            messagebox.showinfo: Dacă medicul a fost adăugat cu succes.
+        """
+        
         nume = self.entry_nume.get().upper()
         prenume = self.entry_prenume.get().upper()
         parafa = self.entry_parafa.get().upper()
@@ -115,6 +127,14 @@ class MediciCuranti(ttk.Frame):
         self.refresh_medici()
 
     def modificare_medic(self):
+        """
+        Modifică datele medicului selectat din tabel.
+        Verifică dacă toate câmpurile sunt completate și dacă medicul există deja în baza de date.
+        Dacă utilizatorul confirmă modificarea, actualizează datele medicului și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de avertizare sau eroare.
+        La final, resetează câmpurile formularului și actualizează lista medicilor.
+        """
+
         nume = self.entry_nume.get().upper()
         prenume = self.entry_prenume.get().upper()
         parafa = self.entry_parafa.get().upper()
@@ -149,6 +169,14 @@ class MediciCuranti(ttk.Frame):
         self.refresh_medici()
 
     def stergere_medic(self):
+        """
+        Șterge medicul selectat din tabel și din baza de date.
+        Verifică dacă există înregistrări asociate medicului înainte de ștergere.
+        Dacă nu există, cere confirmarea utilizatorului și șterge medicul.
+        Afișează mesaje informative sau de eroare după caz.
+        La final, resetează câmpurile formularului și actualizează lista medicilor.
+        """
+        
         idmedic = self.id_medic
         nume = self.entry_nume.get().upper()
         prenume = self.entry_prenume.get().upper()
@@ -179,6 +207,11 @@ class MediciCuranti(ttk.Frame):
         self.refresh_medici()
 
     def load_selected_medic(self, event):
+        """
+        Încarcă datele medicului selectat din tabel în câmpurile formularului pentru editare.
+        Setează id-ul medicului pentru operațiuni ulterioare (modificare/ștergere).
+        """
+
         selected = self.tabel_medici_curanti.selection()
 
         if selected:
@@ -196,7 +229,6 @@ class MediciCuranti(ttk.Frame):
             self.entry_parafa.insert(0, values[3])
 
             self.activ_var.set(int(values[4]))
-
 
 class MediciTrimitatori(ttk.Frame):
     def __init__(self, parinte):
@@ -238,6 +270,10 @@ class MediciTrimitatori(ttk.Frame):
         self.refresh_medici()
 
     def refresh_medici(self):
+        """
+        Reîncarcă tabelul cu medicii trimitători din baza de date.
+        Șterge toate rândurile existente și inserează datele actualizate.
+        """
         
         for rows in self.tabel_medici_trimitatori.get_children():
             self.tabel_medici_trimitatori.delete(rows)
@@ -246,6 +282,14 @@ class MediciTrimitatori(ttk.Frame):
             self.tabel_medici_trimitatori.insert("", tkinter.END , values=rows)
 
     def adaugare_medic(self):
+        """
+        Adaugă un medic trimitător nou în baza de date pe baza datelor introduse în câmpurile formularului.
+        Verifică dacă toate câmpurile obligatorii sunt completate și dacă medicul cu parafa respectivă nu există deja.
+        Dacă datele sunt valide și medicul nu există, îl adaugă în baza de date și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de eroare corespunzător.
+        La final, resetează câmpurile formularului și actualizează lista medicilor.
+        """        
+        
         nume = self.entry_nume.get()
         prenume = self.entry_prenume.get()
         parafa = self.entry_parafa.get().capitalize()
@@ -271,6 +315,14 @@ class MediciTrimitatori(ttk.Frame):
         self.refresh_medici()
 
     def modificare_medic(self):
+        """
+        Modifică datele medicului trimitător selectat din tabel.
+        Verifică dacă toate câmpurile sunt completate și dacă medicul există deja în baza de date.
+        Dacă utilizatorul confirmă modificarea, actualizează datele medicului și afișează un mesaj de succes.
+        În caz contrar, afișează un mesaj de avertizare sau eroare.
+        La final, resetează câmpurile formularului și actualizează lista medicilor.
+        """
+
         nume = self.entry_nume.get()
         prenume = self.entry_prenume.get()
         parafa = self.entry_parafa.get().capitalize()
@@ -303,6 +355,11 @@ class MediciTrimitatori(ttk.Frame):
         self.refresh_medici()
 
     def load_selected_medic(self, event):
+        """
+        Încarcă datele medicului trimitător selectat din tabel în câmpurile formularului pentru editare.
+        Setează id-ul medicului pentru operațiuni ulterioare (modificare).
+        """
+        
         selected = self.tabel_medici_trimitatori.selection()
 
         if selected:
@@ -320,6 +377,12 @@ class MediciTrimitatori(ttk.Frame):
             self.entry_parafa.insert(0, values[3])
 
     def incarcare_nomenclator(self):
+        """
+        Încarcă un nomenclator de medici trimitători dintr-un fișier JSON selectat de utilizator.
+        Adaugă medicii noi în baza de date și actualizează statusul celor care nu mai există în nomenclator.
+        Afișează mesaje informative privind succesul sau eșecul operațiunii.
+        """
+
         cale_fisier = filedialog.askopenfilename(
             title='Selectati fisierul JSON pentru medicii trimitatori',
             filetypes=[('Fișier JSON', '*.json')],

@@ -26,9 +26,11 @@ class MeniuPrincipal(tkinter.Tk):
         self.withdraw()
         self.utilizator_autentificat = None
         self.autentificare = FereastraAutentificare(self)
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
 
     def deschide_meniu_principal_admin(self):
+        """ Functie care deschide meniul principal pentru utilizatorul cu drepturi de administrator """
+
         self.deiconify()  # Afiseaza fereastra principala (cu meniul) dupa ce utilizatorul se autentifica cu succes
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,800,600))
 
@@ -64,6 +66,7 @@ class MeniuPrincipal(tkinter.Tk):
         tkinter.Button(frame_administrare,text='SECTII', command= lambda: FereastraSectii(self),width=30,height=3).pack(padx=20,pady=12)
 
     def deschide_meniu_principal_operator(self):
+        """ Functie care deschide meniul principal pentru utilizatorul cu drepturi de operator """
         self.deiconify()  # Afiseaza fereastra principala (cu meniul) dupa ce utilizatorul se autentifica cu succes
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,800,600))
 

@@ -15,7 +15,7 @@ class FereastraAutentificare(tkinter.Toplevel):
         self.resizable(False, False) # Dimensiunea nu este modificabila
        # self.update_idletasks() # Asteapta initializarea completa a aplicatiei si abia apoi o deschide
         self.geometry(utilities.pozitionare_fereastra_pe_ecran(self,350,180)) # Setam geometria si centrarea pe ecran folosind functia pozitionare_fereastra_pe_ecran cu parametrii fiind dimensiunea dorita a ferestrei
-        self.iconbitmap(r'C:\Users\vladg\OneDrive\Documents\GitHub\MedicareApp\Logo.ico') # Setam iconita aplicatiei
+        self.iconbitmap(utilities.get_icon_path())  # Setam iconita aplicatiei        
         
         # Label si Entry pentru autentificare utilizator + pozitionare
         tkinter.Label(self, text="Utilizator:").pack(pady=(10, 0))
@@ -35,11 +35,19 @@ class FereastraAutentificare(tkinter.Toplevel):
         tkinter.Button(self, text="Autentificare", command=self.verifica_login).pack(pady=10)
 
     def verifica_login(self):
-        '''
-        Functia verifica_login din cadrul clasei FereastraAutentificare are rolul de a verifica daca utilizatorul si parola sunt conform 
-        cu cele introduse in sistem
-        '''
+        """
+        Verifică dacă utilizatorul și parola introduse corespund unor credențiale valide din sistem.
 
+        Această metodă preia valorile introduse în câmpurile de utilizator și parolă, apoi apelează funcția
+        de căutare a operatorului din modulul bazei de date pentru a valida credențialele. Dacă autentificarea
+        este reușită, fereastra de login este închisă și se deschide meniul principal corespunzător tipului de
+        utilizator (admin sau operator). În caz contrar, afișează un mesaj de eroare.
+
+        Returns:
+            None
+        """
+        
+        # Preluam datele introduse de utilizator
         utilizator = self.entry_utilizator.get()
         parola = self.entry_parola.get()
         date_utilizator = baza_de_date.cautare_operator(utilizator,parola) # Apelam functia de cautare operator din modulul baza de date pentru credentiale
@@ -54,7 +62,7 @@ class FereastraAutentificare(tkinter.Toplevel):
 
             self.destroy()  # Închidem fereastra de login
 
-            if date_utilizator[5] == '1':  # Dacă este admin
+            if date_utilizator[1] == 'admin':  # Dacă este admin
                 self.master.deschide_meniu_principal_admin()
             else:  # Operator normal
                 self.master.deschide_meniu_principal_operator()
